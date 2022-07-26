@@ -1,0 +1,48 @@
+<!--
+  ~  Copyright 2022. Explore in HMS. All rights reserved. Licensed under the Apache License, Version 2.0 (the "License") you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  -->
+
+<resources>
+    <string name="app_name">Photography App</string>
+
+    <string name="dialog_permission_title">Permission Required</string>
+    <string name="dialog_permission_default_message">We need permission to see objects.</string>
+    <string name="dialog_permission_button_positive">Allow</string>
+    <string name="get_photo_permission_message">We need permission to see photos.</string>
+    <string name="access_media_location_permission_message">We need permission to access photo location.</string>
+    <string name="photo_count"> Photos (%1$d)</string>
+    <string name="other_tags">Other Tags:</string>
+    <string name="tag_name">TAG NAME</string>
+    <string name="test">Test</string>
+    <string name="todo">TODO</string>
+    <string name="tagName">Tag Name: %s</string>
+    <string name="edit">Edit</string>
+    <string name="share">Share</string>
+    <string name="save_filter">Save Filter</string>
+    <string name="save_crop">Save Crop</string>
+    <string name="cancel">Cancel</string>
+    <string name="end_edit">End Edit</string>
+    <string name="save_photo">Save Photo</string>
+    <string name="back">Back</string>
+    <string name="shareImage">Share Image</string>
+    <string name="home">Home</string>
+    <string name="locations">Locations</string>
+    <string name="titles">Titles</string>
+    <string name="add_file_information">Add File Information</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="add_person">Add Person</string>
+    <string name="shared_files">Files You Shared</string>
+    <string name="save_file_info">Save File Info</string>
+    <string name="shared_images">Shared Images</string>
+    <string name="select_photo">Select Photo</string>
+    <string name="welcome_to_PhotographyApp">Welcome to PhotographyApp</string>
+    <string name="login_and_start_to_edit_your_photos">Login and start to edit your photos</string>
+    <string name="date_title">Date Title</string>
+    <string name="shared_files_with_you">Shared Files With You</string>
+    <string name="save_values">Save Values</string>
+</resources>

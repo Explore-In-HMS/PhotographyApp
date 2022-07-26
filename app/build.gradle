@@ -1,0 +1,182 @@
+/*
+ *  Copyright 2022. Explore in HMS. All rights reserved. Licensed under the Apache License, Version 2.0 (the "License") you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ */
+
+plugins {
+    id 'com.android.application'
+    id 'com.huawei.agconnect'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+    id 'androidx.navigation.safeargs'
+    id 'org.sonarqube' version '3.0'
+
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "PhotographyApp"
+        property "sonar.projectName", "PhotographyApp"
+        property "sonar.login", "30207cfed9927ee712c0744a933b223641a44775"
+        property "sonar.host.url", "http://10.216.72.212:9000"
+        property "sonar.projectVersion", android.defaultConfig.versionName
+    }
+}
+
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        applicationId "com.hms.referenceapp.photoapp"
+        minSdk 28
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("photoapp.jks")
+            storePassword "123456"
+            keyAlias "photoapp"
+            keyPassword "123456"
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "API_KEY", '"DAEDAO88/eanRuACeXLTShvrPLBUsjgXbqpLewy4YS8pQtXNhnO3DdvQ9UcxdU0bbyZihRmj3Hbsj/ZagbIGbk9Khwf3x/hh/uXIIQ=="'
+        }
+        debug {
+            signingConfig signingConfigs.release
+            debuggable true
+            buildConfigField "String", "API_KEY", '"DAEDAO88/eanRuACeXLTShvrPLBUsjgXbqpLewy4YS8pQtXNhnO3DdvQ9UcxdU0bbyZihRmj3Hbsj/ZagbIGbk9Khwf3x/hh/uXIIQ=="'
+        }
+    }
+
+    packagingOptions {
+        // Exclude file to avoid
+        // Error: Duplicate files during packaging of APK
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        viewBinding true
+        dataBinding true
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    def navVersion = "2.5.0"
+    def hiltVersion = "2.38.1"
+    def lifecycleVersion = "2.5.0"
+    def lifecycleExtensionsVersion = "2.2.0"
+    def room_version = "2.4.2"
+
+
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    // Flexbox Layout
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+
+    // Recyclerview
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
+
+    // CardView
+    implementation "androidx.cardview:cardview:1.0.0"
+
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:4.13.0'
+
+    // Navigation
+    implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$navVersion"
+
+
+    // Hilt
+    implementation "com.google.dagger:hilt-android:$hiltVersion"
+    kapt "com.google.dagger:hilt-android-compiler:2.37"
+
+    // fragment ktx
+    implementation "androidx.fragment:fragment-ktx:1.4.1"
+
+    // Lifecycle
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleExtensionsVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
+
+    // EXIF
+    implementation "androidx.exifinterface:exifinterface:1.3.3"
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.9.1"
+
+    // Gson
+    implementation 'com.google.code.gson:gson:2.9.0'
+
+    // Room
+    implementation "androidx.room:room-ktx:$room_version"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    // HMS Kits
+    implementation 'com.huawei.hms:hwid:6.4.0.300'
+    implementation "com.huawei.agconnect:agconnect-auth:1.6.5.300"
+    implementation "com.huawei.agconnect:agconnect-auth-huawei:1.6.4.300"
+    implementation 'com.huawei.hms:ml-computer-vision-classification:3.4.0.304'
+    implementation 'com.huawei.hms:ml-computer-vision-image-classification-model:3.4.0.304'
+    implementation "com.huawei.hms:image-vision:1.0.3.304"
+    implementation 'com.huawei.agconnect:agconnect-cloud-database:1.5.2.300'
+
+    implementation 'com.huawei.hms:maps:6.4.1.300'
+
+    implementation project(path: ':clustering')
+
+}

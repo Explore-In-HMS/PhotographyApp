@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Copyright 2022. Explore in HMS. All rights reserved. Licensed under the Apache License, Version 2.0 (the "License") you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  -->
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_navigation"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.hms.referenceapp.photoapp.ui.home.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_tagDetailFragment"
+            app:destination="@id/tagDetailFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_openImageFragment"
+            app:destination="@id/openImageFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_clusteredPhotosFragment"
+            app:destination="@id/clusteredPhotosFragment"/>
+        <action
+            android:id="@+id/action_homeFragment_to_shareImageFragment"
+            app:destination="@id/shareImageFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/tagDetailFragment"
+        android:name="com.hms.referenceapp.photoapp.ui.tagdetail.TagDetailFragment"
+        android:label="TagDetailFragment"
+        tools:layout="@layout/fragment_tag_detail">
+
+        <action
+            android:id="@+id/action_tagDetailFragment_to_openImageFragment"
+            app:destination="@id/openImageFragment" />
+
+        <argument
+            android:name="tagName"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+
+        <argument
+            android:name="classificationItems"
+            app:argType="com.hms.referenceapp.photoapp.data.model.ClassificationModel[]"
+            app:nullable="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/editImageFragment"
+        android:name="com.hms.referenceapp.photoapp.ui.editimage.EditImageFragment"
+        android:label="EditImageFragment"
+        tools:layout="@layout/fragment_edit_image">
+
+        <action
+            android:id="@+id/action_editImageFragment_to_openImageFragment"
+            app:destination="@id/openImageFragment"
+            app:popUpTo="@+id/homeFragment" />
+
+        <argument
+            android:name="imagePath"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="editedImageArg"
+            app:argType="com.hms.referenceapp.photoapp.data.model.EditedPhotoModel"
+            app:nullable="true"
+            android:defaultValue="@null" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/openImageFragment"
+        android:name="com.hms.referenceapp.photoapp.ui.openimage.OpenImageFragment"
+        android:label="OpenImageFragment"
+        tools:layout="@layout/fragment_open_image">
+        <action
+            android:id="@+id/action_openImageFragment_to_editImageFragment"
+            app:destination="@id/editImageFragment" />
+
+        <action
+            android:id="@+id/action_openImageFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+
+        <argument
+            android:name="imagePath"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="editedImageArg"
+            app:argType="com.hms.referenceapp.photoapp.data.model.EditedPhotoModel"
+            app:nullable="true"
+            android:defaultValue="@null" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/clusteredPhotosFragment"
+        android:name="com.hms.referenceapp.photoapp.ui.clustered.ClusteredPhotosFragment"
+        android:label="fragment_clustered_photos"
+        tools:layout="@layout/fragment_clustered_photos" >
+        <argument
+            android:name="clusterItem"
+            app:argType="com.hms.referenceapp.photoapp.data.model.PhotoModel[]" />
+    </fragment>
+    <fragment
+        android:id="@+id/shareImageFragment"
+        android:name="com.hms.referenceapp.photoapp.ui.shareimage.ShareImageFragment"
+        android:label="ShareImageFragment"
+        tools:layout="@layout/fragment_share_image">
+        <action
+            android:id="@+id/action_shareImageFragment_to_shareImageDetailFragment"
+            app:destination="@id/shareImageDetailFragment" />
+        <action
+            android:id="@+id/action_shareImageFragment_to_listUserFragment"
+            app:destination="@id/listUserFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/shareImageDetailFragment"
+        android:name="com.hms.referenceapp.photoapp.ui.shareimagedetail.ShareImageDetailFragment"
+        android:label="ShareImageDetailFragment"
+        tools:layout="@layout/fragment_share_image_detail">
+        <argument
+            android:name="sharePhotoModel"
+            app:argType="com.hms.referenceapp.photoapp.ui.shareimage.SharePhotoModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.hms.referenceapp.photoapp.ui.login.LoginFragment"
+        android:label="LoginFragment"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/listUserFragment"
+        android:name="com.hms.referenceapp.photoapp.ui.listuser.ListUserFragment"
+        android:label="fragment_list_user"
+        tools:layout="@layout/fragment_list_user" >
+        <action
+            android:id="@+id/action_listUserFragment_to_shareImageFragment"
+            app:destination="@id/shareImageFragment" />
+    </fragment>
+</navigation>

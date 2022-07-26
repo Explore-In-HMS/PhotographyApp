@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Copyright 2022. Explore in HMS. All rights reserved. Licensed under the Apache License, Version 2.0 (the "License") you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dirtyWhite"
+    tools:context=".ui.editimage.EditImageFragment">
+
+    <LinearLayout
+        android:id="@+id/buttonsLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/cropButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:visibility="gone"
+                android:text="@string/save_crop"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                app:backgroundTint="@color/huaweiRed"
+                app:icon="@drawable/ic_crop"
+                app:iconTint="@color/white"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <Button
+                android:id="@+id/filterButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:visibility="gone"
+                android:text="@string/save_filter"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                app:backgroundTint="@color/huaweiRed"
+                app:icon="@drawable/ic_filter"
+                app:iconTint="@color/white"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <Button
+                android:id="@+id/cancelButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:visibility="gone"
+                android:text="@string/cancel"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                app:backgroundTint="@color/huaweiRed"
+                app:icon="@drawable/ic_cancel"
+                app:iconTint="@color/white"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/endEditButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:visibility="gone"
+                android:text="@string/end_edit"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                app:backgroundTint="@color/huaweiRed"
+                app:icon="@drawable/ic_end"
+                app:iconTint="@color/white"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/editImageView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        android:contentDescription="@string/todo"
+        app:layout_constraintBottom_toTopOf="@+id/cropFeatures"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonsLinearLayout" />
+
+    <com.huawei.hms.image.vision.crop.CropLayoutView
+        android:id="@+id/cropLayoutView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        android:visibility="gone"
+        app:cropBackgroundColor="#88AA66CC"
+        app:cropBorderCornerColor="@android:color/holo_blue_bright"
+        app:cropBorderCornerThickness="5dp"
+        app:cropBorderLineColor="@android:color/holo_green_light"
+        app:cropGuidelines="on"
+        app:cropGuidelinesColor="@android:color/holo_red_dark"
+        app:cropSnapRadius="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/cropFeatures"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonsLinearLayout" />
+
+    <LinearLayout
+        android:id="@+id/cropFeatures"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerview_filterTypes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/crop"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginVertical="3dp"
+            android:src="@drawable/crop"
+            android:contentDescription="@string/todo" />
+
+        <ImageView
+            android:id="@+id/rotate"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginVertical="3dp"
+            android:src="@drawable/rotate"
+            android:contentDescription="@string/todo"/>
+
+        <ImageView
+            android:id="@+id/flipHorizontal"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginVertical="3dp"
+            android:src="@drawable/flip_vertical"
+            android:contentDescription="@string/todo"/>
+
+        <ImageView
+            android:id="@+id/flipVertical"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginVertical="3dp"
+            android:src="@drawable/flip_horizontal"
+            android:contentDescription="@string/todo"/>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_filterTypes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
