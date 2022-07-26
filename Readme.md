@@ -151,7 +151,7 @@ is used for development.
 
   ![User](art/user.png)
   ![Photos](art/photos.png)
-- ![PhotoDetail](art/photodetails.png)
+  ![PhotoDetail](art/photodetails.png)
   ![PhotoDetail2](art/photodetails_2.png)
 
 - You need to client id and client secret to obtain an access token from Account Kit via OAuth-based
