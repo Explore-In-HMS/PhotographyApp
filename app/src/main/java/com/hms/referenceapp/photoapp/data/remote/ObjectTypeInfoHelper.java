@@ -10,7 +10,7 @@ package com.hms.referenceapp.photoapp.data.remote;
 
 import com.hms.referenceapp.photoapp.data.model.PhotoDetails;
 import com.hms.referenceapp.photoapp.data.model.Photos;
-import com.hms.referenceapp.photoapp.data.model.user;
+import com.hms.referenceapp.photoapp.data.model.User;
 import com.huawei.agconnect.cloud.database.CloudDBZoneObject;
 import com.huawei.agconnect.cloud.database.ObjectTypeInfo;
 
@@ -21,18 +21,18 @@ import java.util.List;
 /**
  * Definition of ObjectType Helper.
  *
- * @since 2022-07-23
+ * @since 2022-08-17
  */
 public final class ObjectTypeInfoHelper {
     private static final int FORMAT_VERSION = 2;
-    private static final int OBJECT_TYPE_VERSION = 6;
+    private static final int OBJECT_TYPE_VERSION = 12;
 
     public static ObjectTypeInfo getObjectTypeInfo() {
         ObjectTypeInfo objectTypeInfo = new ObjectTypeInfo();
         objectTypeInfo.setFormatVersion(FORMAT_VERSION);
         objectTypeInfo.setObjectTypeVersion(OBJECT_TYPE_VERSION);
         List<Class<? extends CloudDBZoneObject>> objectTypeList = new ArrayList<>();
-        Collections.addAll(objectTypeList, Photos.class, PhotoDetails.class, user.class);
+        Collections.addAll(objectTypeList, Photos.class, User.class, PhotoDetails.class);
         objectTypeInfo.setObjectTypes(objectTypeList);
         return objectTypeInfo;
     }

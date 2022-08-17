@@ -41,13 +41,13 @@ class ShareImageViewModel @Inject constructor(
     }
 
     fun filterFilesYouSharedList(photoDetailList: List<PhotoDetails>): List<SharePhotoModel> {
-        return photoDetailList.distinctBy {  it.file_id }.map {
+        return photoDetailList.distinctBy {  it.fileId }.map {
             SharePhotoModel(
                 id = it.id,
-                fileId = it.file_id,
-                title = it.file_name,
-                description = it.file_desc,
-                sharedPersonCount = it.number_of_people_shared
+                fileId = it.fileId,
+                title = it.fileName,
+                description = it.fileDesc,
+                sharedPersonCount = it.numberOfPeopleShared
             )
         }
     }
@@ -56,10 +56,10 @@ class ShareImageViewModel @Inject constructor(
         return photoDetailList.map {
             SharePhotoModel(
                 id = it.id,
-                fileId = it.file_id,
-                title = it.file_name,
-                description = it.file_desc,
-                sharedPersonCount = it.number_of_people_shared
+                fileId = it.fileId,
+                title = it.fileName,
+                description = it.fileDesc,
+                sharedPersonCount = it.numberOfPeopleShared
             )
         }
     }
@@ -68,19 +68,19 @@ class ShareImageViewModel @Inject constructor(
     fun prepareFileData(fileInformationModel: FileInformationModel?) {
 
         var milliSecond = System.currentTimeMillis().toInt()
-        val fileId = "fileId_${milliSecond}"
+        val fileIdWithMillisecond = "fileId_${milliSecond}"
 
         fileInformationModel?.userList?.forEach { checkedUser ->
             PhotoDetails().apply {
                 id = milliSecond
-                sender_id = agConnectUser.currentUser.uid
-                sender_name = agConnectUser.currentUser.displayName
-                receiver_id = checkedUser.user.unionId
-                receiver_name = checkedUser.user.name
-                file_id = fileId
-                file_name = fileInformationModel.title
-                file_desc = fileInformationModel.description
-                number_of_people_shared = fileInformationModel.numberOfPeopleShared
+                senderId = agConnectUser.currentUser.uid
+                senderName = agConnectUser.currentUser.displayName
+                receiverId = checkedUser.user.unionId
+                receiverName = checkedUser.user.name
+                fileId = fileIdWithMillisecond
+                fileName = fileInformationModel.title
+                fileDesc = fileInformationModel.description
+                numberOfPeopleShared = fileInformationModel.numberOfPeopleShared
             }.also {
                 saveFileWithPersonToCloud(it)
                 milliSecond += 1
@@ -163,13 +163,13 @@ class ShareImageViewModel @Inject constructor(
                 if (it != null) {
                     cloudDbRepository.addSubscriptionForFilesYouShared(
                         it,
-                        "sender_id",
+                        "senderId",
                         agConnectUser.currentUser.uid
                     )
 
                     cloudDbRepository.addSubscriptionForSharedFilesWithYou(
                         it,
-                        "receiver_id",
+                        "receiverId",
                         agConnectUser.currentUser.uid
                     )
                 }

@@ -12,22 +12,20 @@ import com.huawei.agconnect.cloud.database.CloudDBZoneObject;
 import com.huawei.agconnect.cloud.database.annotations.PrimaryKeys;
 
 /**
- * Definition of ObjectType user.
+ * Definition of ObjectType User.
  *
- * @since 2022-06-02
+ * @since 2022-08-17
  */
 @PrimaryKeys({"id"})
-public final class user extends CloudDBZoneObject {
+public final class User extends CloudDBZoneObject {
     private Long id;
 
     private String unionId;
 
     private String name;
 
-    private String test;
-
-    public user() {
-        super(user.class);
+    public User() {
+        super(User.class);
     }
 
     public void setId(Long id) {
@@ -52,14 +50,6 @@ public final class user extends CloudDBZoneObject {
 
     public String getName() {
         return name;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
-    }
-
-    public String getTest() {
-        return test;
     }
 
 }

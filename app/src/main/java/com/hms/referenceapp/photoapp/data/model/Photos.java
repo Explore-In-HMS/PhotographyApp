@@ -14,15 +14,15 @@ import com.huawei.agconnect.cloud.database.annotations.PrimaryKeys;
 /**
  * Definition of ObjectType Photos.
  *
- * @since 2022-07-19
+ * @since 2022-08-17
  */
 @PrimaryKeys({"id"})
 public final class Photos extends CloudDBZoneObject {
     private Integer id;
 
-    private String file_id;
+    private String fileId;
 
-    private byte[] byte_array_of_photo;
+    private byte[] byteArrayOfPhoto;
 
     public Photos() {
         super(Photos.class);
@@ -36,20 +36,19 @@ public final class Photos extends CloudDBZoneObject {
         return id;
     }
 
-    public void setFile_id(String file_id) {
-        this.file_id = file_id;
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
     }
 
-    public String getFile_id() {
-        return file_id;
+    public String getFileId() {
+        return fileId;
     }
 
-    public void setByte_array_of_photo(byte[] byte_array_of_photo) {
-        this.byte_array_of_photo = byte_array_of_photo;
+    public void setByteArrayOfPhoto(byte[] byteArrayOfPhoto) {
+        this.byteArrayOfPhoto = byteArrayOfPhoto;
     }
 
-    public byte[] getByte_array_of_photo() {
-        return byte_array_of_photo;
+    public byte[] getByteArrayOfPhoto() {
+        return byteArrayOfPhoto;
     }
-
 }

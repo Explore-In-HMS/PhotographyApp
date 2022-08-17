@@ -12,7 +12,7 @@ import android.util.Log
 import com.hms.referenceapp.photoapp.common.Result
 import com.hms.referenceapp.photoapp.data.model.PhotoDetails
 import com.hms.referenceapp.photoapp.data.model.Photos
-import com.hms.referenceapp.photoapp.data.model.user
+import com.hms.referenceapp.photoapp.data.model.User
 import com.hms.referenceapp.photoapp.data.remote.ObjectTypeInfoHelper
 import com.hms.referenceapp.photoapp.util.Event
 import com.huawei.agconnect.cloud.database.*
@@ -46,9 +46,9 @@ class CloudDbRepository @Inject constructor(
     private val _cloudDbZoneFlow = MutableStateFlow(initialCloudDbZone)
     val cloudDbZoneFlow: StateFlow<CloudDBZone?> get() = _cloudDbZoneFlow.asStateFlow()
 
-    private val initialCloudDbUserResponseList: MutableList<user>? = null
+    private val initialCloudDbUserResponseList: MutableList<User>? = null
     private val _cloudDbUserResponse = MutableStateFlow(initialCloudDbUserResponseList)
-    val cloudDbUserResponse: StateFlow<MutableList<user>?> get() = _cloudDbUserResponse.asStateFlow()
+    val cloudDbUserResponse: StateFlow<MutableList<User>?> get() = _cloudDbUserResponse.asStateFlow()
 
     private var limit = 0
     private var remind = 0
@@ -230,7 +230,7 @@ class CloudDbRepository @Inject constructor(
             return
         }
         val queryTask = cloudDBZone!!.executeQuery(
-            CloudDBZoneQuery.where(user::class.java),
+            CloudDBZoneQuery.where(User::class.java),
             CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
         )
         queryTask.addOnSuccessListener { snapshot -> processUserQueryResult(snapshot) }
@@ -238,9 +238,9 @@ class CloudDbRepository @Inject constructor(
             }
     }
 
-    private fun processUserQueryResult(snapshot: CloudDBZoneSnapshot<user>) {
+    private fun processUserQueryResult(snapshot: CloudDBZoneSnapshot<User>) {
         val userInfoCursor = snapshot.snapshotObjects
-        val userInfoList: MutableList<user> = ArrayList()
+        val userInfoList: MutableList<User> = ArrayList()
         try {
             while (userInfoCursor.hasNext()) {
                 val userInfo = userInfoCursor.next()
@@ -262,7 +262,7 @@ class CloudDbRepository @Inject constructor(
             return
         }
         cloudDBZone!!.executeCountQuery(
-            CloudDBZoneQuery.where(Photos::class.java).equalTo("file_id", fileId), "id",
+            CloudDBZoneQuery.where(Photos::class.java).equalTo("fileId", fileId), "id",
             CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
         ).addOnSuccessListener { count ->
             val firstLimit = getLimit(count.toInt())
@@ -314,7 +314,7 @@ class CloudDbRepository @Inject constructor(
         onErrorListener: (Exception) -> Unit
     ) {
         val query = CloudDBZoneQuery.where(Photos::class.java)
-            .equalTo("file_id", fileId)
+            .equalTo("fileId", fileId)
             .orderByAsc("id")
             .also { query ->
                 lastPhotos?.let {

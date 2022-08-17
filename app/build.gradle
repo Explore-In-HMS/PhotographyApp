@@ -14,8 +14,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'androidx.navigation.safeargs'
-    id 'org.sonarqube' version '3.0'
-
+    id 'org.sonarqube' version "3.0"
 }
 
 sonarqube {
@@ -27,7 +26,6 @@ sonarqube {
         property "sonar.projectVersion", android.defaultConfig.versionName
     }
 }
-
 
 android {
     compileSdk 31

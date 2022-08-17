@@ -12,7 +12,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hms.referenceapp.photoapp.data.model.FileInformationModel
 import com.hms.referenceapp.photoapp.data.model.UserSelectUiModel
-import com.hms.referenceapp.photoapp.data.model.user
+import com.hms.referenceapp.photoapp.data.model.User
 import com.hms.referenceapp.photoapp.data.repository.CloudDbRepository
 import com.hms.referenceapp.photoapp.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +37,7 @@ class ListUserViewModel @Inject constructor(
         }
     }
 
-    private fun handleGetUserListStatus(result: List<user>?) {
+    private fun handleGetUserListStatus(result: List<User>?) {
             result?.let {
             val userUiModelList = result.map {
                 it.toUserSelectUiModel()
@@ -51,7 +51,7 @@ class ListUserViewModel @Inject constructor(
         }
     }
 
-    private fun user.toUserSelectUiModel(): UserSelectUiModel {
+    private fun User.toUserSelectUiModel(): UserSelectUiModel {
         return UserSelectUiModel(this, false)
     }
 

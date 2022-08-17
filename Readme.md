@@ -149,10 +149,10 @@ is used for development.
       created in AppGallery Connect. If you encountered with an error please check models and object
       type fields.
 
-  ![User](art/user.png)
-  ![Photos](art/photos.png)
-  ![PhotoDetail](art/photodetails.png)
-  ![PhotoDetail2](art/photodetails_2.png)
+  ![User](art/User.png)
+  ![Photos](art/Photos.png)
+  ![PhotoDetails1](art/PhotoDetails1.png)
+  ![PhotoDetails2](art/PhotoDetails2.png)
 
 - You need to client id and client secret to obtain an access token from Account Kit via OAuth-based
   authentication. [Get this information](https://developer.huawei.com/consumer/en/doc/distribution/app/agc-help-appinfo-0000001100014694)
@@ -171,7 +171,7 @@ is used for development.
 
 ## Sonarqube Report ✅
 
-![PhotographyApp](art/sonarqube.png)
+![PhotographyApp](art/Sonarqube.png)
 
 P.S.: We are aware we have code smells according to sonarqube report. The reason of these in Cloud
 DB our naming can't pass the sonarqube. We will fix this issues in next version.

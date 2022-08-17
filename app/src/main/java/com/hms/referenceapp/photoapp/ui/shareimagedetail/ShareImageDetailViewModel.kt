@@ -64,11 +64,11 @@ class ShareImageDetailViewModel @Inject constructor(
         }
 
         cloudDbRepository.allSharedPhotosResponse.onEach { result ->
-            result.getContentIfNotHandled()?.let {
+            result.getContentIfNotHandled()?.let { it ->
                 when (it) {
                     is Result.Error -> showError(it.exception.localizedMessage.orEmpty())
                     Result.Loading -> showLoading()
-                    is Result.Success -> showAlreadySharedPhotos(it.data.map { it.byte_array_of_photo })
+                    is Result.Success -> showAlreadySharedPhotos(it.data.map { it.byteArrayOfPhoto })
                 }
             }
         }.launchIn(viewModelScope)
@@ -109,8 +109,8 @@ class ShareImageDetailViewModel @Inject constructor(
             selectedPhotos.forEach {
                 cloudDbRepository.saveToCloudDB(Photos().apply {
                     id = photoId
-                    file_id = sharePhotoUiState.value.fileId
-                    byte_array_of_photo = convertBitmapToByteArray(it)
+                    fileId = sharePhotoUiState.value.fileId
+                    byteArrayOfPhoto = convertBitmapToByteArray(it)
                 }.also {
                     photoId += 1
                 }).collectLatest {

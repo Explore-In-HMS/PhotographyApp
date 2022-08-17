@@ -9,6 +9,6 @@
 package com.hms.referenceapp.photoapp.data.model
 
 data class UserSelectUiModel (
-    val user: user,
+    val user: User,
     var isChecked: Boolean = true
 )

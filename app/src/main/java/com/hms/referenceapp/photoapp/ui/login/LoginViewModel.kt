@@ -11,7 +11,7 @@ package com.hms.referenceapp.photoapp.ui.login
 import android.content.Intent
 import androidx.lifecycle.viewModelScope
 import com.hms.referenceapp.photoapp.common.Result
-import com.hms.referenceapp.photoapp.data.model.user
+import com.hms.referenceapp.photoapp.data.model.User
 import com.hms.referenceapp.photoapp.data.repository.AuthenticationRepository
 import com.hms.referenceapp.photoapp.listeners.IServiceListener
 import com.hms.referenceapp.photoapp.ui.base.BaseViewModel
@@ -49,7 +49,7 @@ class LoginViewModel @Inject constructor(
     fun saveUserToCloud(
         agcUser: AGConnectUser
     ) {
-        val user = user().apply {
+        val user = User().apply {
             id = agcUser.uid.toLong()
             unionId = agcUser.uid
             name = agcUser.displayName

@@ -14,27 +14,27 @@ import com.huawei.agconnect.cloud.database.annotations.PrimaryKeys;
 /**
  * Definition of ObjectType PhotoDetails.
  *
- * @since 2022-07-23
+ * @since 2022-08-17
  */
 @PrimaryKeys({"id"})
 public final class PhotoDetails extends CloudDBZoneObject {
     private Integer id;
 
-    private String sender_id;
+    private String senderId;
 
-    private String sender_name;
+    private String senderName;
 
-    private String receiver_id;
+    private String receiverId;
 
-    private String receiver_name;
+    private String receiverName;
 
-    private String file_id;
+    private String fileId;
 
-    private String file_name;
+    private String fileName;
 
-    private String file_desc;
+    private String fileDesc;
 
-    private String number_of_people_shared;
+    private String numberOfPeopleShared;
 
     public PhotoDetails() {
         super(PhotoDetails.class);
@@ -48,68 +48,68 @@ public final class PhotoDetails extends CloudDBZoneObject {
         return id;
     }
 
-    public void setSender_id(String sender_id) {
-        this.sender_id = sender_id;
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
     }
 
-    public String getSender_id() {
-        return sender_id;
+    public String getSenderId() {
+        return senderId;
     }
 
-    public void setSender_name(String sender_name) {
-        this.sender_name = sender_name;
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
-    public String getSender_name() {
-        return sender_name;
+    public String getSenderName() {
+        return senderName;
     }
 
-    public void setReceiver_id(String receiver_id) {
-        this.receiver_id = receiver_id;
+    public void setReceiverId(String receiverId) {
+        this.receiverId = receiverId;
     }
 
-    public String getReceiver_id() {
-        return receiver_id;
+    public String getReceiverId() {
+        return receiverId;
     }
 
-    public void setReceiver_name(String receiver_name) {
-        this.receiver_name = receiver_name;
+    public void setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
     }
 
-    public String getReceiver_name() {
-        return receiver_name;
+    public String getReceiverName() {
+        return receiverName;
     }
 
-    public void setFile_id(String file_id) {
-        this.file_id = file_id;
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
     }
 
-    public String getFile_id() {
-        return file_id;
+    public String getFileId() {
+        return fileId;
     }
 
-    public void setFile_name(String file_name) {
-        this.file_name = file_name;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
-    public String getFile_name() {
-        return file_name;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFile_desc(String file_desc) {
-        this.file_desc = file_desc;
+    public void setFileDesc(String fileDesc) {
+        this.fileDesc = fileDesc;
     }
 
-    public String getFile_desc() {
-        return file_desc;
+    public String getFileDesc() {
+        return fileDesc;
     }
 
-    public void setNumber_of_people_shared(String number_of_people_shared) {
-        this.number_of_people_shared = number_of_people_shared;
+    public void setNumberOfPeopleShared(String numberOfPeopleShared) {
+        this.numberOfPeopleShared = numberOfPeopleShared;
     }
 
-    public String getNumber_of_people_shared() {
-        return number_of_people_shared;
+    public String getNumberOfPeopleShared() {
+        return numberOfPeopleShared;
     }
 
 }
