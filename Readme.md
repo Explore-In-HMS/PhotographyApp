@@ -173,9 +173,6 @@ is used for development.
 
 ![PhotographyApp](art/Sonarqube.png)
 
-P.S.: We are aware we have code smells according to sonarqube report. The reason of these in Cloud
-DB our naming can't pass the sonarqube. We will fix this issues in next version.
-
 ## Contributors
 
 - [Mehmet Yozgatli](https://www.linkedin.com/in/mehmetyozgatlii/)
