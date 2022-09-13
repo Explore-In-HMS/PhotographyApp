@@ -112,7 +112,7 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>(FragmentHo
     override fun setupListeners() {
         photoGalleryAdapter.setOnItemClickListener {
             val action =
-                HomeFragmentDirections.actionHomeFragmentToOpenImageFragment(it)
+                HomeFragmentDirections.actionHomeFragmentToOpenImageFragment(it, null)
             findNavController().navigate(action)
         }
     }

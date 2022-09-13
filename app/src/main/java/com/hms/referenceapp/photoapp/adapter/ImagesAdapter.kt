@@ -21,6 +21,11 @@ import javax.inject.Inject
 class ImagesAdapter @Inject constructor() :
     ListAdapter<Bitmap, ImagesAdapter.GalleryItemViewHolder>(PhotoDiffCallback) {
 
+    private var onItemClickListener: ((Bitmap) -> Unit)? = null
+    fun setOnItemClickListener(listener: (Bitmap) -> Unit) {
+        onItemClickListener = listener
+    }
+
     inner class GalleryItemViewHolder(
         private val binding: GalleryItemBinding
     ) :
@@ -28,6 +33,10 @@ class ImagesAdapter @Inject constructor() :
 
         fun bind(image: Bitmap) {
             binding.image.load(image)
+
+            binding.image.setOnClickListener {
+                onItemClickListener?.invoke(image)
+            }
         }
     }
 

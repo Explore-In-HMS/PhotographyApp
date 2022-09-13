@@ -11,6 +11,7 @@ package com.hms.referenceapp.photoapp.ui.openimage
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.view.View
 import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -22,7 +23,6 @@ import com.hms.referenceapp.photoapp.ui.base.BaseFragment
 import com.hms.referenceapp.photoapp.util.ext.*
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class OpenImageFragment :
     BaseFragment<OpenImageViewModel, FragmentOpenImageBinding>(FragmentOpenImageBinding::inflate) {
@@ -33,15 +33,20 @@ class OpenImageFragment :
     private var openedImage: String? = null
     private var editedImage: Bitmap? = null
     private var editedImageUri: Uri? = null
+    private var sharedImage: Bitmap? = null
 
     override fun setupUi() {
         openedImage = openImageFragmentArgs.imagePath
         editedImage = openImageFragmentArgs.editedImageArg?.editedImage
+        sharedImage = openImageFragmentArgs.imageBitmap
 
         with(binding) {
             // Set openedImage if it available
             if (openedImage != null) {
                 openedImage?.let { openedImageView.load(it) }
+            } else if (sharedImage != null) {
+                openedImageView.setImageBitmap(sharedImage)
+                bottomNavigationView.visibility = View.INVISIBLE
             } else {
                 // Set editedImage if it available
                 checkAndSetEditedImage()

@@ -58,7 +58,7 @@ class TagDetailFragment :
     override fun setupListeners() {
         classificationPhotosAdapter.setOnItemClickListener {
             val action =
-                TagDetailFragmentDirections.actionTagDetailFragmentToOpenImageFragment(it)
+                TagDetailFragmentDirections.actionTagDetailFragmentToOpenImageFragment(it, null)
             findNavController().navigate(action)
         }
     }

@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.hms.referenceapp.photoapp.adapter.ImagesAdapter
 import com.hms.referenceapp.photoapp.databinding.FragmentShareImageDetailBinding
 import com.hms.referenceapp.photoapp.ui.base.BaseFragment
+import com.hms.referenceapp.photoapp.ui.home.HomeFragmentDirections
 import com.hms.referenceapp.photoapp.util.ext.collectLast
 import com.hms.referenceapp.photoapp.util.ext.getSpanCountByOrientation
 import com.hms.referenceapp.photoapp.util.ext.setVisibility
@@ -48,6 +49,17 @@ class ShareImageDetailFragment :
             btnShareImage.setOnClickListener {
                 viewModel.sharePhotos()
             }
+        }
+
+        imagesAdapter.setOnItemClickListener {
+            /*val action = ShareImageDetailFragmentDirections.actionShareImageDetailFragmentToOpenImageFragment()
+            findNavController().navigate(action)*/
+            val action =
+                ShareImageDetailFragmentDirections.actionShareImageDetailFragmentToOpenImageFragment(
+                    null,
+                    it
+                )
+            findNavController().navigate(action)
         }
     }
 
