@@ -246,7 +246,8 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>(FragmentHo
                     getThemeTagFromImage(
                         contentResolver = requireContext().contentResolver,
                         path = recentlyPhotoModelList!!,
-                        requestFlag = true
+                        requestFlag = true,
+                        photoSize = photoUiState.getRecentlyPhotosCount()
                     )
                 } else {
                     binding.tagProgressBar.visibility = VISIBLE
@@ -255,7 +256,8 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>(FragmentHo
                     getThemeTagFromImage(
                         contentResolver = requireContext().contentResolver,
                         path = recentlyPhotoModelList!!,
-                        requestFlag = false
+                        requestFlag = false,
+                        photoSize = photoUiState.getRecentlyPhotosCount()
                     )
                 }
             }
@@ -265,17 +267,18 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>(FragmentHo
     private fun getThemeTagFromImage(
         contentResolver: ContentResolver,
         path: List<PhotoModel>,
-        requestFlag: Boolean
+        requestFlag: Boolean,
+        photoSize: Int
     ) {
         viewModel.getThemeTagFromImage(
             contentResolver = contentResolver,
             path = path,
-            requestFlag = requestFlag
+            requestFlag = requestFlag,
+            photoSize = photoSize
         )
     }
 
     private fun getAllData(dataList: List<ClassificationModel>) {
-        if (dataList.size == 20) {
             //Progress Bar State
             binding.tagProgressBar.visibility = INVISIBLE
             //Clear param list
@@ -296,7 +299,7 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>(FragmentHo
 
             // Dynamically create TextView according to 10 item
             dynamicallyCreateTextView(filterAndSortParameterList)
-        }
+
     }
 
     private fun dynamicallyCreateTextView(filterAndSortParameterList: Map<String, Int>) {
