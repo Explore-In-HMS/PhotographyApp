@@ -1,0 +1,81 @@
+[
+  {
+    "mapFeature": "administrative",
+    "options": "geometry.fill",
+    "paint": {
+      "color": "#373937"
+    }
+  },
+  {
+    "mapFeature": "administrative",
+    "options": "geometry.stroke",
+    "paint": {
+      "color": "#d7dad7"
+    }
+  },
+  {
+    "mapFeature": "landcover",
+    "options": "geometry.fill",
+    "visibility": true,
+    "paint": {
+      "color": "#e9e4e2"
+    }
+  },
+  {
+    "mapFeature": "water",
+    "options": "geometry.fill",
+    "paint": {
+      "color": "#34a8a8"
+    }
+  },
+  {
+    "mapFeature": "water",
+    "options": "labels.text.fill",
+    "paint": {
+      "color": "#ffffff"
+    }
+  },
+  {
+    "mapFeature": "water",
+    "options": "labels.text.stroke",
+    "paint": {
+      "color": "#ff6f6f"
+    }
+  },
+  {
+    "mapFeature": "all",
+    "options": "labels.text",
+    "paint": {
+      "color": "#ffffff"
+    }
+  },
+  {
+    "mapFeature": "all",
+    "options": "labels.text.fill",
+    "paint": {
+      "color": "#360203"
+    }
+  },
+  {
+    "mapFeature": "road",
+    "options": "geometry.fill",
+    "paint": {
+      "color": "#ff6f6f"
+    },
+    "visibility": true
+  },
+  {
+    "mapFeature": "road",
+    "options": "labels.text",
+    "paint": {
+      "color": "#ee484a"
+    }
+  },
+  {
+    "mapFeature": "road",
+    "options": "labels.text.fill",
+    "paint": {
+      "color": "#ffffff"
+    }
+  }
+]
