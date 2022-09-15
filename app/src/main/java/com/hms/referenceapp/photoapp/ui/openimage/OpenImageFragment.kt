@@ -82,8 +82,8 @@ class OpenImageFragment :
 
             // Buttons
             savePhotoButton.setOnClickListener {
+                binding.saveImageProgressBar.show()
                 if (editedImage != null) {
-                    binding.saveImageProgressBar.show()
                     viewModel.saveEditedPhoto(requireContext(), editedImage!!)
                 }
             }
@@ -115,6 +115,7 @@ class OpenImageFragment :
     private fun saveImage(saveImageResult: Boolean?) {
         if (saveImageResult == true) {
             binding.saveImageProgressBar.gone()
+            binding.savePhotoButton.gone()
             showToast("Edited Image Saved. Please Check Your Gallery.")
         } else if (saveImageResult == false) {
             showToast("Edited Image Not Saved.")
