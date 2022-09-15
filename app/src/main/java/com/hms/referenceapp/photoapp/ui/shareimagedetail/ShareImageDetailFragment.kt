@@ -52,8 +52,6 @@ class ShareImageDetailFragment :
         }
 
         imagesAdapter.setOnItemClickListener {
-            /*val action = ShareImageDetailFragmentDirections.actionShareImageDetailFragmentToOpenImageFragment()
-            findNavController().navigate(action)*/
             val action =
                 ShareImageDetailFragmentDirections.actionShareImageDetailFragmentToOpenImageFragment(
                     null,
@@ -92,7 +90,6 @@ class ShareImageDetailFragment :
         }
 
         setPhotos(sharePhotoUiState.photos)
-
     }
 
     private fun showError(errorMessage: String) {
