@@ -11,6 +11,7 @@ package com.hms.referenceapp.photoapp.ui.openimage
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.view.View
 import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -77,8 +78,8 @@ class OpenImageFragment :
 
             // Buttons
             savePhotoButton.setOnClickListener {
+                binding.saveImageProgressBar.show()
                 if (editedImage != null) {
-                    binding.saveImageProgressBar.show()
                     viewModel.saveEditedPhoto(requireContext(), editedImage!!)
                 }
             }
@@ -110,6 +111,7 @@ class OpenImageFragment :
     private fun saveImage(saveImageResult: Boolean?) {
         if (saveImageResult == true) {
             binding.saveImageProgressBar.gone()
+            binding.savePhotoButton.visibility = View.GONE
             showToast("Edited Image Saved. Please Check Your Gallery.")
         } else if (saveImageResult == false) {
             showToast("Edited Image Not Saved.")
