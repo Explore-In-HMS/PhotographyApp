@@ -139,7 +139,7 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>(FragmentHo
         this.hMap = hMap
         // Map Style
         val style: MapStyleOptions =
-            MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.mapstyle_night_hms)
+            MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.mapstyle_custom)
         this.hMap?.setMapStyle(style)
 
         // Set Cluster
