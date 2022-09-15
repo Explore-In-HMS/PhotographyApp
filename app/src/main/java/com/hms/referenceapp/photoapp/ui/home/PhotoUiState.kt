@@ -22,7 +22,9 @@ data class PhotoUiState(
 
     fun getPhotosWhichHasLocation() = allPhotoModels.filter { hasPhotoLocation(it.coordinate) }
 
-    fun getRecentlyPhotos() = allPhotoModels.take(20)
+    fun getRecentlyPhotos() = if (getAllPhotoCount() < 20){allPhotoModels.take(getAllPhotoCount())} else {allPhotoModels.take(20)}
+
+    fun getRecentlyPhotosCount() = if (getAllPhotoCount() < 20){ getAllPhotoCount()} else {20}
 
     private fun hasPhotoLocation(coordinate: LatLng?): Boolean {
         return (coordinate == null || (coordinate.latitude == 0.0 && coordinate.longitude == 0.0)).not()
