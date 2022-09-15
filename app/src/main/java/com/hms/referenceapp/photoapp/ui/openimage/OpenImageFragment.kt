@@ -111,7 +111,7 @@ class OpenImageFragment :
     private fun saveImage(saveImageResult: Boolean?) {
         if (saveImageResult == true) {
             binding.saveImageProgressBar.gone()
-            binding.savePhotoButton.visibility = View.GONE
+            binding.savePhotoButton.gone()
             showToast("Edited Image Saved. Please Check Your Gallery.")
         } else if (saveImageResult == false) {
             showToast("Edited Image Not Saved.")
