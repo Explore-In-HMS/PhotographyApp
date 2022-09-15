@@ -8,7 +8,9 @@
 
 package com.hms.referenceapp.photoapp.ui.editimage
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.view.MotionEvent
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -45,6 +47,8 @@ class EditImageFragment :
     private var bitmapImage: Bitmap? = null
     private var finalImage: Bitmap? = null
 
+    private var isLongPressed = false
+
     override fun setupUi() {
         bitmapImage = if (editImageFragmentArgs.imagePath != null) {
             viewModel.convertToBitmap(
@@ -73,6 +77,7 @@ class EditImageFragment :
         imageVisionFilterAPI.stop()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun setupListeners() {
         with(binding) {
             crop.setOnClickListener {
@@ -142,6 +147,19 @@ class EditImageFragment :
                 clearAllEdit()
                 editImageInImageView()
                 enableEndEditButton()
+            }
+
+            editImageView.setOnLongClickListener {
+                showOriginalImage()
+                return@setOnLongClickListener true
+            }
+
+            editImageView.setOnTouchListener { view, motionEvent ->
+                view.onTouchEvent(motionEvent)
+                if (motionEvent.action == MotionEvent.ACTION_UP){
+                   showEditedImage()
+                }
+                return@setOnTouchListener true
             }
 
             endEditButton.setOnClickListener {
@@ -259,6 +277,20 @@ class EditImageFragment :
                     editImageInImageView()
                     enableEndEditButton()
                 }
+            }
+        }
+    }
+
+    private fun showOriginalImage(){
+        isLongPressed = true
+        binding.editImageView.setImageBitmap(bitmapImage!!)
+    }
+
+    private fun showEditedImage(){
+        if (isLongPressed){
+            isLongPressed = false
+            if (finalImage != null) {
+                binding.editImageView.setImageBitmap(finalImage)
             }
         }
     }
