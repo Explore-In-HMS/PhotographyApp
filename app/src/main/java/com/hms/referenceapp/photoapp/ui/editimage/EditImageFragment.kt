@@ -147,7 +147,7 @@ class EditImageFragment :
             endEditButton.setOnClickListener {
                 if (finalImage != null) {
                     val action =
-                        EditImageFragmentDirections.actionEditImageFragmentToOpenImageFragment(null)
+                        EditImageFragmentDirections.actionEditImageFragmentToOpenImageFragment(null, null)
                             .setEditedImageArg(
                                 finalImage?.let { image -> EditedPhotoModel(image) }
                             )
@@ -155,7 +155,7 @@ class EditImageFragment :
                 } else {
                     val action =
                         EditImageFragmentDirections.actionEditImageFragmentToOpenImageFragment(
-                            editImageFragmentArgs.imagePath
+                            editImageFragmentArgs.imagePath, null
                         ).setEditedImageArg(bitmapImage?.let { image -> EditedPhotoModel(image) })
                     findNavController().navigate(action)
                 }

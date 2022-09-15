@@ -110,6 +110,11 @@
             app:nullable="true"
             android:defaultValue="@null" />
 
+        <argument
+            android:name="imageBitmap"
+            app:argType="android.graphics.Bitmap"
+            app:nullable="true"/>
+
     </fragment>
 
     <fragment
@@ -141,6 +146,9 @@
         <argument
             android:name="sharePhotoModel"
             app:argType="com.hms.referenceapp.photoapp.ui.shareimage.SharePhotoModel" />
+        <action
+            android:id="@+id/action_shareImageDetailFragment_to_openImageFragment"
+            app:destination="@id/openImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
