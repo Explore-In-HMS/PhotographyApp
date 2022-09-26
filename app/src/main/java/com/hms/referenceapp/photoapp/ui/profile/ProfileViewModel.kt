@@ -1,6 +1,5 @@
 package com.hms.referenceapp.photoapp.ui.profile
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hms.referenceapp.photoapp.data.model.UserProfileUiModel
 import com.hms.referenceapp.photoapp.data.repository.AuthenticationRepository

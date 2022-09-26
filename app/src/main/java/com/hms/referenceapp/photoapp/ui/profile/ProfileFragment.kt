@@ -1,7 +1,6 @@
 package com.hms.referenceapp.photoapp.ui.profile
 
 import android.util.Log
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.hms.referenceapp.photoapp.R
