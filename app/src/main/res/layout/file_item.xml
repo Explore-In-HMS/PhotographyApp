@@ -26,7 +26,7 @@
             android:id="@+id/imageIv"
             android:layout_width="match_parent"
             android:layout_height="180dp"
-            android:contentDescription="@string/todo"
+            android:contentDescription="@string/file_item_image"
             android:scaleType="centerCrop"
             android:src="@drawable/ocean" />
 
