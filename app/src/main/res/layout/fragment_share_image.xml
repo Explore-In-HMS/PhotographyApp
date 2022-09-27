@@ -70,7 +70,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:backgroundTint="@color/huaweiRed"
-        android:contentDescription="@string/todo"
+        android:contentDescription="@string/add_file_information"
         android:src="@drawable/ic_add"
         android:tint="@color/huaweiRed" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
