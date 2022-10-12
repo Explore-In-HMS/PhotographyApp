@@ -13,6 +13,7 @@ import com.hms.referenceapp.photoapp.common.Result
 import com.hms.referenceapp.photoapp.data.model.PhotoDetails
 import com.hms.referenceapp.photoapp.data.model.Photos
 import com.hms.referenceapp.photoapp.data.model.User
+import com.hms.referenceapp.photoapp.data.model.UserRelationship
 import com.hms.referenceapp.photoapp.data.remote.ObjectTypeInfoHelper
 import com.hms.referenceapp.photoapp.util.Event
 import com.huawei.agconnect.cloud.database.*
@@ -49,6 +50,10 @@ class CloudDbRepository @Inject constructor(
     private val initialCloudDbUserResponseList: MutableList<User>? = null
     private val _cloudDbUserResponse = MutableStateFlow(initialCloudDbUserResponseList)
     val cloudDbUserResponse: StateFlow<MutableList<User>?> get() = _cloudDbUserResponse.asStateFlow()
+
+    private val initialCloudDbUserRelationResponseList: MutableList<UserRelationship>? = null
+    private val _cloudDbUserRelationResponse = MutableStateFlow(initialCloudDbUserRelationResponseList)
+    val cloudDbUserRelationResponse: StateFlow<MutableList<UserRelationship>?> get() = _cloudDbUserRelationResponse.asStateFlow()
 
     private var limit = 0
     private var remind = 0
@@ -254,6 +259,22 @@ class CloudDbRepository @Inject constructor(
         _cloudDbUserResponse.value = userInfoList
     }
 
+    private fun processUserRelationQueryResult(snapshot: CloudDBZoneSnapshot<UserRelationship>) {
+        val userRelationInfoCursor = snapshot.snapshotObjects
+        val userRelationInfoList: MutableList<UserRelationship> = ArrayList()
+        try {
+            while (userRelationInfoCursor.hasNext()) {
+                val userRelationInfo = userRelationInfoCursor.next()
+                userRelationInfoList.add(userRelationInfo)
+            }
+        } catch (e: AGConnectCloudDBException) {
+
+        } finally {
+            snapshot.release()
+        }
+        _cloudDbUserRelationResponse.value = userRelationInfoList
+    }
+
     fun getSharedPhotos(fileId: String) {
         _allSharedPhotosResponse.value = Event(Result.Loading)
         if (cloudDBZone == null) {
@@ -346,6 +367,22 @@ class CloudDbRepository @Inject constructor(
         } finally {
             snapshot.release()
         }
+    }
+
+
+    fun getPendingRequests(){
+        if (cloudDBZone == null) {
+            return
+        }
+        val queryTask = cloudDBZone!!.executeQuery(
+            CloudDBZoneQuery.where(UserRelationship::class.java),
+            CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
+        )
+        queryTask.addOnSuccessListener { snapshot -> processUserRelationQueryResult(snapshot)
+        }
+            .addOnFailureListener {
+
+            }
     }
 
     private fun getLimit(count: Int) = (if (count >= 4) 4 else count)
