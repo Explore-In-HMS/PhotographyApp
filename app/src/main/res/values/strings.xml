@@ -89,5 +89,9 @@
     <string name="sign_out">Sign Out</string>
     <string name="user_image">User Image</string>
 
+    <!-- AddFriend -->
+    <string name="search_user">search user</string>
+    <string name="add_friend">add friend</string>
+
 
 </resources>
