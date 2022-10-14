@@ -119,13 +119,17 @@ class AddFriendsViewModel @Inject constructor(
 
 
     private fun handleGetUserListStatus(result: List<User>?) {
-        result?.let {
-            val userUiModelList = result.map {
+        val mutableResultList = result?.toMutableList()
+        mutableResultList?.forEach {
+            if (it.id.toString() == userId){
+                mutableResultList.remove(it)
+            }
+        }
+        mutableResultList?.let {
+            val userUiModelList = mutableResultList.map {
                 it.toUserSelectUiModel()
             }
-
             _addFriendsUiState.update { currentUserListUiState ->
-                Log.d("tafffUi",userUiModelList.size.toString())
                 currentUserListUiState.copy(
                     savedUserList = userUiModelList
                 )
