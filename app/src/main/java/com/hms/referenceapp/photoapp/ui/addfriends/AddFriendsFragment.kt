@@ -37,6 +37,7 @@ class AddFriendsFragment :
         }
 
         userId = args.userId.toString()
+        viewModel.userId = userId
 
         setAdapters()
         viewModel.getUsers()
@@ -69,7 +70,6 @@ class AddFriendsFragment :
     private fun setAdapters(){
         binding.recyclerviewUsers.adapter = listUserAdapter
         binding.recyclerviewPendingRequest.adapter = pendingRequestAdapter
-        Log.d("sldkvdsopkfpaofksd pend req list size",viewModel.addFriendsUiState.value.pendingRequestList.size.toString())
         pendingRequestAdapter.setRequestList(viewModel.addFriendsUiState.value.pendingRequestList)
     }
 

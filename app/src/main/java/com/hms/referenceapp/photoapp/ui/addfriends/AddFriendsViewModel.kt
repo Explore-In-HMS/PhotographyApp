@@ -96,9 +96,7 @@ class AddFriendsViewModel @Inject constructor(
             it.id == pendingRequest.id
         }?.also {
             it.isAccepted = pendingRequest.isAccepted
-            Log.d("acccceeedeadeadea"  ,pendingRequest.isAccepted.toString())
             it.isDeclined = pendingRequest.isDeclined
-            Log.d("acccceeedeadeadea"  ,pendingRequest.isDeclined.toString())
 
             if (it.isAccepted == true) {
                 sendFriendRequestResponse(it.id.toString(), userId, true)
