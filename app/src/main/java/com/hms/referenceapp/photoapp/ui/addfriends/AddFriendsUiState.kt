@@ -1,14 +1,15 @@
 package com.hms.referenceapp.photoapp.ui.addfriends
 
+import com.hms.referenceapp.photoapp.data.model.PendingRequestUiModel
 import com.hms.referenceapp.photoapp.data.model.UserProfileUiModel
 import com.hms.referenceapp.photoapp.data.model.UserRelationship
 import com.hms.referenceapp.photoapp.data.model.UserSelectUiModel
 
 data class AddFriendsUiState(
-    val loading: Boolean,
+    var loading: Boolean,
     val savedUserList: List<UserSelectUiModel>,
     val isUserRelationSaved: Boolean,
-    var userRelationList: MutableList<UserRelationship>,
+    var pendingRequestList: MutableList<PendingRequestUiModel>,
     val error: List<String>
 ) {
     companion object {
@@ -16,7 +17,7 @@ data class AddFriendsUiState(
             loading = false,
             savedUserList= emptyList(),
             isUserRelationSaved = false,
-            userRelationList = mutableListOf(),
+            pendingRequestList = mutableListOf(),
             error = emptyList()
         )
     }

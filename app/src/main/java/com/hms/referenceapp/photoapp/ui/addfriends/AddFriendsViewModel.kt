@@ -3,9 +3,7 @@ package com.hms.referenceapp.photoapp.ui.addfriends
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hms.referenceapp.photoapp.common.Result
-import com.hms.referenceapp.photoapp.data.model.User
-import com.hms.referenceapp.photoapp.data.model.UserRelationship
-import com.hms.referenceapp.photoapp.data.model.UserSelectUiModel
+import com.hms.referenceapp.photoapp.data.model.*
 import com.hms.referenceapp.photoapp.data.repository.AuthenticationRepository
 import com.hms.referenceapp.photoapp.data.repository.CloudDbRepository
 import com.hms.referenceapp.photoapp.ui.base.BaseViewModel
@@ -26,49 +24,47 @@ class AddFriendsViewModel @Inject constructor(
     private val _addFriendsUiState = MutableStateFlow(AddFriendsUiState.initial())
     val addFriendsUiState: StateFlow<AddFriendsUiState> get() = _addFriendsUiState.asStateFlow()
 
+    lateinit var userId : String
+
     fun getUsers() {
         cloudDbRepository.getUsers()
         viewModelScope.launch {
             cloudDbRepository.cloudDbUserResponse.collect {
-                it
-                println(it)
                 if (it != null) {
-
                     handleGetUserListStatus(it)
-
-                }else {
-
                 }
-                it
-                //handleGetUserListStatus(it)
             }
         }
     }
 
     fun getPendingRequests(currentUserId: String){
+        userId = currentUserId
         cloudDbRepository.getPendingRequests()
         viewModelScope.launch {
             cloudDbRepository.cloudDbUserRelationResponse.collect{ userRelationList ->
-                userRelationList
-                println(userRelationList)
                 if (userRelationList != null) {
-                    Log.d("pending","usersize ${userRelationList.size.toString()}")
-                    _addFriendsUiState.value.userRelationList = userRelationList
+                    val currentRequestList = mutableListOf<PendingRequestUiModel>()
+                    addFriendsUiState.value.pendingRequestList.clear()
+                    //_addFriendsUiState.value.userRelationList = userRelationList
                     userRelationList.forEach {
                         if (it.secondUserId == currentUserId){
-                            if (it.pendingFirstSecond){
-                                Log.d("pendingUserId",it.firstUserId)
-                                //elimizde arkadaşlık istekleri kullanıcı bazlı olarak geliyor. Şimdi eğer
-                                //kullanıcı isteği onaylarsa bu kişilerin arkadaş olması gerekiyor.
-                                //bu durumda pending kalkıcak arefriends true olucak!
-                                //daha sonra başka fragmentlardan arkadaş listesi çekilirken
-                                //sadece areFriends true olanlar çekilecek!
+                            if ( it.pendingFirstSecond && !it.areFriends){
+                                val pendingRequestUiModel = PendingRequestUiModel(
+                                    it.firstUserId,
+                                    getUserNameFromId(it.firstUserId),
+                                    isAccepted = false,
+                                    isDeclined = false,
+                                )
+                                currentRequestList.add(pendingRequestUiModel)
+                                addFriendsUiState.value.pendingRequestList.add(pendingRequestUiModel)
                             }
                         }
                     }
-
-                }else {
-                    Log.d("pending","usersize null")
+                    _addFriendsUiState.update { currentRequestListUiState ->
+                        currentRequestListUiState.copy(
+                            pendingRequestList = currentRequestList
+                        )
+                    }
                 }
             }
         }
@@ -83,6 +79,44 @@ class AddFriendsViewModel @Inject constructor(
         }
         return filteredList
     }
+
+    private fun getUserNameFromId(id: String): String{
+        _addFriendsUiState.value.savedUserList.forEach { userModel ->
+            if (userModel.user.id.toString() == id){
+                return userModel.user.name
+            }
+        }
+        return "" //should be updated
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun updatePendingRequest(pendingRequest: PendingRequestUiModel) {
+        val currentRequestList = _addFriendsUiState.value.pendingRequestList
+        currentRequestList.find {
+            it.id == pendingRequest.id
+        }?.also {
+            it.isAccepted = pendingRequest.isAccepted
+            Log.d("acccceeedeadeadea"  ,pendingRequest.isAccepted.toString())
+            it.isDeclined = pendingRequest.isDeclined
+            Log.d("acccceeedeadeadea"  ,pendingRequest.isDeclined.toString())
+
+            if (it.isAccepted == true) {
+                sendFriendRequestResponse(it.id.toString(), userId, true)
+            }
+
+            if (it.isDeclined == true){
+                sendFriendRequestResponse(it.id.toString(), userId, false)
+            }
+
+            currentRequestList.remove(it)
+        }
+        _addFriendsUiState.update { currentRequestListUiState ->
+            currentRequestListUiState.copy(
+               pendingRequestList = currentRequestList
+            )
+        }
+    }
+
 
     private fun handleGetUserListStatus(result: List<User>?) {
         result?.let {
@@ -103,7 +137,7 @@ class AddFriendsViewModel @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    fun saveUserRelationToCloud(
+    fun sendFriendRequest(
         firstUId: String,
         secondUId: String
     ) {
@@ -113,6 +147,27 @@ class AddFriendsViewModel @Inject constructor(
             firstSecondUID = firstUId + secondUId
             pendingFirstSecond = true
             areFriends = false
+        }
+
+        viewModelScope.launch {
+            authenticationRepository.saveUserRelationshipToCloud(userRelationship).collect {
+                handleUserRelationSaveStatus(it)
+            }
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    fun sendFriendRequestResponse(
+        firstUId: String,
+        secondUId: String,
+        addAsFriend: Boolean
+    ) {
+        val userRelationship = UserRelationship().apply {
+            firstUserId = firstUId
+            secondUserId = secondUId
+            firstSecondUID = firstUId + secondUId
+            pendingFirstSecond = false
+            areFriends = addAsFriend
         }
 
         viewModelScope.launch {
@@ -150,6 +205,5 @@ class AddFriendsViewModel @Inject constructor(
             currentAddFriendsUiState.copy(isUserRelationSaved = isUserRelationshipSaved, loading = false)
         }
     }
-
 
 }
