@@ -92,6 +92,8 @@
     <!-- AddFriend -->
     <string name="search_user">search user</string>
     <string name="add_friend">add friend</string>
+    <string name="accept_request">✓</string>
+    <string name="decline_request">×</string>
 
 
 </resources>
