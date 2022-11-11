@@ -13,8 +13,10 @@ import androidx.lifecycle.viewModelScope
 import com.hms.referenceapp.photoapp.data.model.FileInformationModel
 import com.hms.referenceapp.photoapp.data.model.UserSelectUiModel
 import com.hms.referenceapp.photoapp.data.model.User
+import com.hms.referenceapp.photoapp.data.model.UserRelationship
 import com.hms.referenceapp.photoapp.data.repository.CloudDbRepository
 import com.hms.referenceapp.photoapp.ui.base.BaseViewModel
+import com.huawei.agconnect.auth.AGConnectAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -22,24 +24,47 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ListUserViewModel @Inject constructor(
-    private val cloudDbRepository: CloudDbRepository
+    private val cloudDbRepository: CloudDbRepository,
+    agConnectUser: AGConnectAuth
 ) : BaseViewModel() {
 
     private val _listUserUiState = MutableStateFlow(ListUserUiState.initial())
     val listUserUiState: StateFlow<ListUserUiState> get() = _listUserUiState.asStateFlow()
+    var currentUserId : String
+
+    init {
+        currentUserId = agConnectUser.currentUser.uid.toString()
+    }
 
     fun getUsers() {
         cloudDbRepository.getUsers()
         viewModelScope.launch {
-            cloudDbRepository.cloudDbUserResponse.collect {
-                handleGetUserListStatus(it)
+            cloudDbRepository.cloudDbUserResponse.collect { allUserList->
+                cloudDbRepository.getPendingRequests()
+                cloudDbRepository.cloudDbUserRelationResponse.collect{ userRelationList->
+                    handleGetUserListStatus(allUserList, userRelationList)
+                }
             }
         }
     }
 
-    private fun handleGetUserListStatus(result: List<User>?) {
-            result?.let {
-            val userUiModelList = result.map {
+    private fun handleGetUserListStatus(userList: MutableList<User>?, userRelationList: MutableList<UserRelationship>?  ) {
+            val friendList = mutableListOf<User>()
+            // cok kullanıcı oldugu durumda ic ice for efficient bir cozum degil bunun yerine relation tablosunda name alanı oluşturulup ordan name de çekilere yeni user oluşturulabilir bu sayede tüm kullanıcıları çekip kontrol etmeye gerek kalmaz
+            userList?.forEach { user ->
+                userRelationList?.forEach { userRelation->
+                    if (currentUserId == userRelation.firstUserId && user.id.toString() == userRelation.secondUserId && userRelation.areFriends == true){
+                        friendList.add(user)
+                    }
+                    if (currentUserId == userRelation.secondUserId && user.id.toString() == userRelation.firstUserId && userRelation.areFriends == true){
+                        friendList.add(user)
+                    }
+                }
+            }
+
+
+        friendList.let {
+            val userUiModelList = friendList.map {
                 it.toUserSelectUiModel()
             }
 

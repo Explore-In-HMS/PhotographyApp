@@ -33,6 +33,7 @@ class CloudDbRepository @Inject constructor(
     private var cloudDBZone: CloudDBZone? = null
     private var mRegisterFilesYouShared: ListenerHandler? = null
     private var mRegisterSharedFilesWithYou: ListenerHandler? = null
+    private var mRegisterSharedFilesWithYouReceivers: ListenerHandler? = null
 
     private val initialFilesYouSharedResponseList: MutableList<PhotoDetails>? = null
     private val _filesYouSharedResponse = MutableStateFlow(initialFilesYouSharedResponseList)
@@ -42,6 +43,11 @@ class CloudDbRepository @Inject constructor(
     private val _sharedFilesWithYouResponse =
         MutableStateFlow(initialSharedFilesWithYouResponseList)
     val sharedFilesWithYouResponse: StateFlow<MutableList<PhotoDetails>?> get() = _sharedFilesWithYouResponse.asStateFlow()
+
+    private val initialSharedFilesWithYouReceiverResponseList: MutableList<PhotoDetails>? = null
+    private val _sharedFilesWithYouReceiverResponse =
+        MutableStateFlow(initialSharedFilesWithYouReceiverResponseList)
+    val sharedFilesWithYouReceiverResponse: StateFlow<MutableList<PhotoDetails>?> get() = _sharedFilesWithYouReceiverResponse.asStateFlow()
 
     private val initialCloudDbZone: CloudDBZone? = null
     private val _cloudDbZoneFlow = MutableStateFlow(initialCloudDbZone)
@@ -220,10 +226,58 @@ class CloudDbRepository @Inject constructor(
         }
     }
 
+
+    private val mSnapshotListenerForSharedFilesWithYouReceivers =
+        OnSnapshotListener<PhotoDetails> { cloudDBZoneSnapshot, e ->
+            if (e != null) {
+                Log.w(TAG, "onSnapshot: " + e.message)
+                return@OnSnapshotListener
+            }
+            val snapshotObjects = cloudDBZoneSnapshot.snapshotObjects
+            val sharedFilesWithYouReceiverList: MutableList<PhotoDetails> = ArrayList()
+            try {
+                if (snapshotObjects != null) {
+                    while (snapshotObjects.hasNext()) {
+                        val fileData = snapshotObjects.next()
+                        sharedFilesWithYouReceiverList.add(fileData)
+                    }
+                }
+
+                _sharedFilesWithYouReceiverResponse.value = sharedFilesWithYouReceiverList
+
+            } catch (snapshotException: AGConnectCloudDBException) {
+                Log.w(TAG, "onSnapshot:(getObject) " + snapshotException.message)
+            } finally {
+                cloudDBZoneSnapshot.release()
+            }
+        }
+
+    fun addSubscriptionForSharedFilesWithYouReceivers(
+        cloudDBZoneInstance: CloudDBZone,
+        queryTitle: String,
+        queryValue: String
+    ) {
+        try {
+            if (isDpOpen().not()) {
+                return
+            }
+            val snapshotQuery = CloudDBZoneQuery.where(PhotoDetails::class.java)
+                .equalTo(queryTitle, queryValue)
+            mRegisterSharedFilesWithYouReceivers = cloudDBZoneInstance.subscribeSnapshot(
+                snapshotQuery,
+                CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY,
+                mSnapshotListenerForSharedFilesWithYouReceivers
+            )
+        } catch (e: AGConnectCloudDBException) {
+            Log.w(TAG, "subscribeSnapshot: " + e.message)
+        }
+    }
+
     fun unRegisterToListen() {
         try {
             mRegisterFilesYouShared?.remove()
             mRegisterSharedFilesWithYou?.remove()
+            mRegisterSharedFilesWithYouReceivers?.remove()
         } catch (e: AGConnectCloudDBException) {
             Log.w(TAG, "unRegister: " + e.message)
         }
