@@ -25,6 +25,11 @@ class SharedFileAdapter @Inject constructor() :
         onItemClickListener = listener
     }
 
+    private var onSharedPersonItemClickListener: ((SharePhotoModel) -> Unit)? = null
+    fun setOnSharedPersonItemClickListener(listener: (SharePhotoModel) -> Unit) {
+        onSharedPersonItemClickListener = listener
+    }
+
     inner class FileItemViewHolder(
         private val binding: FileItemBinding
     ) :
@@ -37,6 +42,10 @@ class SharedFileAdapter @Inject constructor() :
 
             binding.fileListCard.setOnClickListener {
                 onItemClickListener?.invoke(fileListItem)
+            }
+
+            binding.sharedPersonCountBtn.setOnClickListener {
+                onSharedPersonItemClickListener?.invoke(fileListItem)
             }
         }
     }

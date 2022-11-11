@@ -1,6 +1,5 @@
 package com.hms.referenceapp.photoapp.ui.addfriends
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hms.referenceapp.photoapp.common.Result
 import com.hms.referenceapp.photoapp.data.model.*
@@ -29,9 +28,10 @@ class AddFriendsViewModel @Inject constructor(
     fun getUsers() {
         cloudDbRepository.getUsers()
         viewModelScope.launch {
-            cloudDbRepository.cloudDbUserResponse.collect {
-                if (it != null) {
-                    handleGetUserListStatus(it)
+            cloudDbRepository.cloudDbUserResponse.collect { allUserList->
+                cloudDbRepository.getPendingRequests()
+                cloudDbRepository.cloudDbUserRelationResponse.collect{ userRelationList->
+                    handleGetUserListStatus(allUserList, userRelationList)
                 }
             }
         }
@@ -116,15 +116,39 @@ class AddFriendsViewModel @Inject constructor(
     }
 
 
-    private fun handleGetUserListStatus(result: List<User>?) {
-        val mutableResultList = result?.toMutableList()
-        mutableResultList?.forEach {
+    private fun handleGetUserListStatus(
+        userList: List<User>?,
+        userRelationList: MutableList<UserRelationship>?
+    ) {
+        val mutableUserList = userList?.toMutableList()
+        var userToRemove : User = User()
+        mutableUserList?.forEach {
             if (it.id.toString() == userId){
-                mutableResultList.remove(it)
+                userToRemove = it
             }
         }
-        mutableResultList?.let {
-            val userUiModelList = mutableResultList.map {
+        mutableUserList?.remove(userToRemove)
+
+        val friendList = mutableListOf<User>()
+        userList?.forEach { user ->
+            userRelationList?.forEach { userRelation->
+                if (userId == userRelation.firstUserId && user.id.toString() == userRelation.secondUserId && userRelation.areFriends == true){
+                    friendList.add(user) //for future usage
+                    if(mutableUserList?.contains(user) == true){
+                        mutableUserList.remove(user)
+                    }
+                }
+                if (userId == userRelation.secondUserId && user.id.toString() == userRelation.firstUserId && userRelation.areFriends == true){
+                    friendList.add(user)
+                    if(mutableUserList?.contains(user) == true){
+                        mutableUserList.remove(user)
+                    }
+                }
+            }
+        }
+
+        mutableUserList?.let {
+            val userUiModelList = mutableUserList.map {
                 it.toUserSelectUiModel()
             }
             _addFriendsUiState.update { currentUserListUiState ->

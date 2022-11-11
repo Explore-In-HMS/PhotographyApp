@@ -8,8 +8,12 @@
 
 package com.hms.referenceapp.photoapp.ui.shareimage
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.ArrayAdapter
+import android.widget.LinearLayout
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -17,12 +21,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.hms.referenceapp.photoapp.adapter.SharedFileAdapter
 import com.hms.referenceapp.photoapp.data.model.FileInformationModel
 import com.hms.referenceapp.photoapp.databinding.FragmentShareImageBinding
+import com.hms.referenceapp.photoapp.databinding.SharedPeopleDialogBinding
 import com.hms.referenceapp.photoapp.ui.base.BaseFragment
 import com.hms.referenceapp.photoapp.util.ext.collectLast
 import com.hms.referenceapp.photoapp.util.ext.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
+import android.R as R1
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -66,8 +72,9 @@ class ShareImageFragment :
         }
 
         filesYouSharedAdapter.setOnItemClickListener(::navigateShareImageDetailPage)
+        filesYouSharedAdapter.setOnSharedPersonItemClickListener { showSharedPeopleDialog(sharePhotoModel = it, true) }
         sharedFilesWithYouAdapter.setOnItemClickListener(::navigateShareImageDetailPage)
-
+        sharedFilesWithYouAdapter.setOnSharedPersonItemClickListener { showSharedPeopleDialog(sharePhotoModel = it, false) }
     }
 
     override fun setupObservers() {
@@ -89,6 +96,36 @@ class ShareImageFragment :
                     sharePhotoModel
                 )
             )
+        }
+    }
+
+    private fun showSharedPeopleDialog(sharePhotoModel: SharePhotoModel, filesYouSharedStateValue: Boolean){
+        val sharedUserList = if (filesYouSharedStateValue) viewModel.getSharedPeopleFromFileId(sharePhotoModel.fileId)
+                         else viewModel.getSharedWithYouPeopleFromFileId(sharePhotoModel.fileId)
+
+        val sharedUserNameList = arrayListOf<String>()
+        sharedUserList?.forEach {
+            sharedUserNameList.add(it.name)
+        }
+
+        val li = LayoutInflater.from(context)
+        val binding = SharedPeopleDialogBinding.inflate(li)
+        val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(context)
+        alertDialogBuilder.setView(binding.root)
+
+        binding.lvSharedPeople.adapter = ArrayAdapter(requireActivity(),
+            R1.layout.simple_list_item_1, sharedUserNameList)
+
+
+        val alertDialogSharedPeople = alertDialogBuilder.create()
+        alertDialogSharedPeople.show()
+        alertDialogSharedPeople.getWindow()?.setLayout(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        binding.button.setOnClickListener {
+            alertDialogSharedPeople.dismiss()
         }
     }
 

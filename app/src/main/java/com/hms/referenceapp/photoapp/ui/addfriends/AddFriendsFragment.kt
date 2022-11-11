@@ -1,6 +1,5 @@
 package com.hms.referenceapp.photoapp.ui.addfriends
 
-import android.util.Log
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -12,7 +11,6 @@ import com.hms.referenceapp.photoapp.util.ext.collectLast
 import com.hms.referenceapp.photoapp.util.ext.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -56,11 +54,11 @@ class AddFriendsFragment :
                 if (it.isChecked){
                     val userId2 = it.user.id.toString()
                     viewModel.sendFriendRequest(userId,userId2)
+                    showToast("Friend request sent!!")
                 }
                 it.isChecked = false
             }
 
-            showToast("Friend request sent!!")
 
             listUserAdapter.setUserList(userList)
         }
@@ -84,7 +82,7 @@ class AddFriendsFragment :
         }
     }
 
-    private suspend fun setUiState(addFriendsUiState: AddFriendsUiState) {
+    private fun setUiState(addFriendsUiState: AddFriendsUiState) {
 
         addFriendsUiState.error.let {
 
@@ -94,7 +92,6 @@ class AddFriendsFragment :
             listUserAdapter.setUserList(it)
         }
 
-        delay(1000) // liste dolmadan yüklemeye çalışıyo sebebini sor
         pendingRequestAdapter.setRequestList(viewModel.addFriendsUiState.value.pendingRequestList)
 
         addFriendsUiState.pendingRequestList.let {
