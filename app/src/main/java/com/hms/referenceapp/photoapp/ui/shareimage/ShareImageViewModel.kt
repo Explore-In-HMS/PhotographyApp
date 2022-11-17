@@ -55,13 +55,19 @@ class ShareImageViewModel @Inject constructor(
             sharedUser.name = it.receiverName
             hashmapSharedPeople.get(it.fileId)?.add(sharedUser)
         }
-        return photoDetailList.distinctBy { it.fileId }.map {
+
+        val sortedPhotoDetailList = photoDetailList.sortedBy {
+            it.id
+        }
+
+        return sortedPhotoDetailList.distinctBy { it.fileId }.map {
             SharePhotoModel(
                 id = it.id,
                 fileId = it.fileId,
                 title = it.fileName,
                 description = it.fileDesc,
-                sharedPersonCount = it.numberOfPeopleShared
+                sharedPersonCount = it.numberOfPeopleShared,
+                true
             )
         }
     }
@@ -86,7 +92,8 @@ class ShareImageViewModel @Inject constructor(
                 fileId = it.fileId,
                 title = it.fileName,
                 description = it.fileDesc,
-                sharedPersonCount = ((it.numberOfPeopleShared.toInt() + 1).toString())
+                sharedPersonCount = ((it.numberOfPeopleShared.toInt() + 1).toString()),
+                false
             )
         }
     }
@@ -131,6 +138,12 @@ class ShareImageViewModel @Inject constructor(
                 saveFileWithPersonToCloud(it)
                 milliSecond += 1
             }
+        }
+    }
+
+    fun deleteSharedFile(fileId: Int, sharedPersonCount: Int){
+        for (i in 0 until sharedPersonCount){
+            cloudDbRepository.deleteSharedFile(fileId + i)
         }
     }
 
