@@ -20,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hms.referenceapp.photoapp.adapter.SharedFileAdapter
 import com.hms.referenceapp.photoapp.data.model.FileInformationModel
+import com.hms.referenceapp.photoapp.data.model.ParcelableUser
 import com.hms.referenceapp.photoapp.databinding.FragmentShareImageBinding
 import com.hms.referenceapp.photoapp.databinding.SharedPeopleDialogBinding
 import com.hms.referenceapp.photoapp.ui.base.BaseFragment
@@ -82,6 +83,21 @@ class ShareImageFragment :
     }
 
     private fun navigateShareImageDetailPage(sharePhotoModel: SharePhotoModel) {
+        val userList = arrayListOf<ParcelableUser>()
+        val didIShare: Boolean
+        val filesSharedWithYou = viewModel.getSharedWithYouPeopleFromFileId(sharePhotoModel.fileId)
+        if (filesSharedWithYou?.isEmpty() == false){
+            didIShare = false
+            filesSharedWithYou.forEach {
+                userList.add(ParcelableUser(it.id, it.unionId, it.name))
+            }
+        }
+        else {
+            didIShare = true
+            viewModel.getSharedPeopleFromFileId(sharePhotoModel.fileId)?.forEach {
+                userList.add(ParcelableUser(it.id, it.unionId, it.name))
+            }
+        }
         with(sharePhotoModel) {
             SharePhotoModel(
                 id = id,
@@ -93,7 +109,9 @@ class ShareImageFragment :
 
             findNavController().navigate(
                 ShareImageFragmentDirections.actionShareImageFragmentToShareImageDetailFragment(
-                    sharePhotoModel
+                    sharePhotoModel,
+                    userList.toTypedArray(),
+                    didIShare
                 )
             )
         }
