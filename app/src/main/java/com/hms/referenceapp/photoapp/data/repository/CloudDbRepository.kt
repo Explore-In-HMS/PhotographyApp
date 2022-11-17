@@ -58,7 +58,8 @@ class CloudDbRepository @Inject constructor(
     val cloudDbUserResponse: StateFlow<MutableList<User>?> get() = _cloudDbUserResponse.asStateFlow()
 
     private val initialCloudDbUserRelationResponseList: MutableList<UserRelationship>? = null
-    private val _cloudDbUserRelationResponse = MutableStateFlow(initialCloudDbUserRelationResponseList)
+    private val _cloudDbUserRelationResponse =
+        MutableStateFlow(initialCloudDbUserRelationResponseList)
     val cloudDbUserRelationResponse: StateFlow<MutableList<UserRelationship>?> get() = _cloudDbUserRelationResponse.asStateFlow()
 
     private var limit = 0
@@ -70,6 +71,11 @@ class CloudDbRepository @Inject constructor(
         MutableStateFlow<Event<Result<List<Photos>>>>(Event(Result.Success(emptyList())))
 
     val allSharedPhotosResponse get() = _allSharedPhotosResponse.asStateFlow()
+
+
+    private val _deleteSharedPhotosResponse =
+        MutableStateFlow<Event<Result<Photos>>>(Event(Result.Success(Photos())))
+    val deleteSharedPhotosResponse get() = _deleteSharedPhotosResponse.asStateFlow()
 
     init {
         openDb()
@@ -424,7 +430,7 @@ class CloudDbRepository @Inject constructor(
     }
 
 
-    fun getPendingRequests(){
+    fun getPendingRequests() {
         if (cloudDBZone == null) {
             return
         }
@@ -432,15 +438,49 @@ class CloudDbRepository @Inject constructor(
             CloudDBZoneQuery.where(UserRelationship::class.java),
             CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
         )
-        queryTask.addOnSuccessListener { snapshot -> processUserRelationQueryResult(snapshot)
+        queryTask.addOnSuccessListener { snapshot ->
+            processUserRelationQueryResult(snapshot)
         }
             .addOnFailureListener {
 
             }
     }
 
-    private fun getLimit(count: Int) = (if (count >= 4) 4 else count)
 
+    fun deletePhotos(id: Int) {
+        _deleteSharedPhotosResponse.value = Event(Result.Loading)
+        if (cloudDBZone == null) {
+            Log.w(TAG, "CloudDBZone is null, try re-open it")
+            _deleteSharedPhotosResponse.value =
+                Event(Result.Error(Exception("Something went wrong")))
+            return
+        }
+
+        val query: CloudDBZoneQuery<Photos> =
+            CloudDBZoneQuery.where(Photos::class.java).equalTo("id", id)
+        val queryTask = cloudDBZone!!.executeQuery(
+            query,
+            CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
+        )
+
+        queryTask.addOnSuccessListener { snapshot ->
+            val photo = snapshot.snapshotObjects.next()
+            val deleteTask = cloudDBZone!!.executeDelete(photo)
+            deleteTask.addOnSuccessListener {
+                _deleteSharedPhotosResponse.value = Event(Result.Success(photo))
+            }
+            deleteTask.addOnFailureListener {
+                _deleteSharedPhotosResponse.value =
+                    Event(Result.Error(Exception("Something went wrong during deleting")))
+            }
+        }
+            .addOnFailureListener {
+                _deleteSharedPhotosResponse.value =
+                    Event(Result.Error(Exception("Something went wrong")))
+            }
+    }
+
+    private fun getLimit(count: Int) = (if (count >= 4) 4 else count)
 
     companion object {
         private const val DB_NAME = "PhotoAppDB"
