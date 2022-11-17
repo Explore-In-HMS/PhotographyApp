@@ -16,6 +16,8 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.hms.referenceapp.photoapp.common.Result
+import com.hms.referenceapp.photoapp.data.model.ParcelableUser
+import com.hms.referenceapp.photoapp.data.model.PhotoDetails
 import com.hms.referenceapp.photoapp.data.model.Photos
 import com.hms.referenceapp.photoapp.data.repository.CloudDbRepository
 import com.hms.referenceapp.photoapp.ui.base.BaseViewModel
@@ -46,11 +48,15 @@ class ShareImageDetailViewModel @Inject constructor(
     init {
         val sharePhotoModel =
             ShareImageDetailFragmentArgs.fromSavedStateHandle(savedStateHandle).sharePhotoModel
-        setSharedPhotosInfo(sharePhotoModel)
+        val sharedUserList =
+            ShareImageDetailFragmentArgs.fromSavedStateHandle(savedStateHandle).sharedUserList
+        val didIShare =
+            ShareImageDetailFragmentArgs.fromSavedStateHandle(savedStateHandle).didIShare
+        setSharedPhotosInfo(sharePhotoModel, sharedUserList, didIShare)
     }
 
 
-    private fun setSharedPhotosInfo(sharePhotoModel: SharePhotoModel) {
+    private fun setSharedPhotosInfo(sharePhotoModel: SharePhotoModel, sharedUserList: Array<ParcelableUser>, didIShare: Boolean) {
         _sharePhotoUiState.update { current ->
             with(sharePhotoModel) {
                 current.copy(
@@ -58,7 +64,9 @@ class ShareImageDetailViewModel @Inject constructor(
                     fileId = fileId,
                     title = title,
                     description = description,
-                    sharedPersonCount = sharedPersonCount
+                    sharedPersonCount = sharedPersonCount,
+                    sharedUserList = sharedUserList.toList(),
+                    didIShare = didIShare
                 )
             }
         }
@@ -93,6 +101,30 @@ class ShareImageDetailViewModel @Inject constructor(
             _sharePhotoUiState.update { current ->
                 current.copy(photos = (current.photos + selectedPhotos).distinct())
             }
+        }
+    }
+
+    fun deleteUserFromSharedFile(fileId: String, receiverId: Long) {
+        cloudDbRepository.deleteUserFromSharedFile(fileId, receiverId)
+        cloudDbRepository.deleteUserResponse.onEach { result ->
+            result.getContentIfNotHandled()?.let { it ->
+                when (it) {
+                    is Result.Error -> showError(it.exception.localizedMessage.orEmpty())
+                    Result.Loading -> showLoading()
+                    is Result.Success -> updateSharedUserList(it.data)
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun updateSharedUserList(deletedUser: PhotoDetails) {
+        _sharePhotoUiState.update { current ->
+            val newList = current.sharedUserList - listOf(ParcelableUser(deletedUser.receiverId.toLong(), null, deletedUser.receiverName)).toSet()
+            current.copy(
+                sharedUserList = newList,
+                error = null,
+                loading = false
+            )
         }
     }
 
