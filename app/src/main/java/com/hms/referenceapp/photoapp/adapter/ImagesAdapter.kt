@@ -10,20 +10,30 @@ package com.hms.referenceapp.photoapp.adapter
 
 import android.graphics.Bitmap
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hms.referenceapp.photoapp.R
+import com.hms.referenceapp.photoapp.data.model.Photos
 import com.hms.referenceapp.photoapp.databinding.GalleryItemBinding
 import com.hms.referenceapp.photoapp.util.ext.load
+import com.hms.referenceapp.photoapp.util.ext.toBitmap
 import com.hms.referenceapp.photoapp.util.ext.viewBinding
 import javax.inject.Inject
 
 class ImagesAdapter @Inject constructor() :
-    ListAdapter<Bitmap, ImagesAdapter.GalleryItemViewHolder>(PhotoDiffCallback) {
+    ListAdapter<Photos, ImagesAdapter.GalleryItemViewHolder>(PhotoDiffCallback) {
+    private var clicked: Boolean = false
 
     private var onItemClickListener: ((Bitmap) -> Unit)? = null
     fun setOnItemClickListener(listener: (Bitmap) -> Unit) {
         onItemClickListener = listener
+    }
+
+    private var onCardClickListener: ((Photos, Boolean) -> Unit)? = null
+    fun setOnCardClickListener(listener: (Photos, Boolean) -> Unit) {
+        onCardClickListener = listener
     }
 
     inner class GalleryItemViewHolder(
@@ -31,11 +41,25 @@ class ImagesAdapter @Inject constructor() :
     ) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(image: Bitmap) {
-            binding.image.load(image)
+        fun bind(photos: Photos) {
+            binding.image.load(photos.byteArrayOfPhoto.toBitmap())
 
             binding.image.setOnClickListener {
-                onItemClickListener?.invoke(image)
+                onItemClickListener?.invoke(photos.byteArrayOfPhoto.toBitmap())
+            }
+
+            binding.image.setOnLongClickListener {
+                clicked = !clicked
+                if (clicked) {
+                    binding.cardViewImage.strokeColor =
+                        ContextCompat.getColor(binding.root.context, R.color.huaweiRed)
+                    onCardClickListener?.invoke(photos, clicked)
+                } else {
+                    binding.cardViewImage.strokeColor =
+                        ContextCompat.getColor(binding.root.context, R.color.dirtyWhite)
+                    onCardClickListener?.invoke(photos, clicked)
+                }
+                return@setOnLongClickListener true
             }
         }
     }
@@ -49,15 +73,13 @@ class ImagesAdapter @Inject constructor() :
         holder.bind(getItem(position))
     }
 
-    object PhotoDiffCallback : DiffUtil.ItemCallback<Bitmap>() {
-        override fun areItemsTheSame(oldItem: Bitmap, newItem: Bitmap): Boolean {
+    object PhotoDiffCallback : DiffUtil.ItemCallback<Photos>() {
+        override fun areItemsTheSame(oldItem: Photos, newItem: Photos): Boolean {
             return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: Bitmap, newItem: Bitmap): Boolean {
+        override fun areContentsTheSame(oldItem: Photos, newItem: Photos): Boolean {
             return newItem.equals(oldItem)
         }
     }
-
-
 }

@@ -84,6 +84,13 @@
         app:layout_constraintTop_toBottomOf="@+id/titleOfLayout">
 
         <Button
+            android:id="@+id/deleteImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delete_photos"
+            android:textSize="11sp" />
+
+        <Button
             android:id="@+id/selectImageBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
