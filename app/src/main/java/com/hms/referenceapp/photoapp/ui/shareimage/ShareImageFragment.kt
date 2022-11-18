@@ -73,6 +73,7 @@ class ShareImageFragment :
 
         filesYouSharedAdapter.setOnItemClickListener(::navigateShareImageDetailPage)
         filesYouSharedAdapter.setOnSharedPersonItemClickListener { showSharedPeopleDialog(sharePhotoModel = it, true) }
+        filesYouSharedAdapter.setOnDeleteItemClickListener{showDeleteFileDialog(it)}
         sharedFilesWithYouAdapter.setOnItemClickListener(::navigateShareImageDetailPage)
         sharedFilesWithYouAdapter.setOnSharedPersonItemClickListener { showSharedPeopleDialog(sharePhotoModel = it, false) }
     }
@@ -88,7 +89,8 @@ class ShareImageFragment :
                 fileId = fileId,
                 title = title,
                 description = description,
-                sharedPersonCount = sharedPersonCount
+                sharedPersonCount = sharedPersonCount,
+                isFileSharedByMe = isFileSharedByMe
             )
 
             findNavController().navigate(
@@ -127,6 +129,22 @@ class ShareImageFragment :
         binding.button.setOnClickListener {
             alertDialogSharedPeople.dismiss()
         }
+    }
+
+    private fun showDeleteFileDialog(file: SharePhotoModel){
+        val deleteDialogBuilder = AlertDialog.Builder(context)
+        deleteDialogBuilder.setMessage("Are you sure you want to delete this file?")
+        deleteDialogBuilder.setCancelable(true)
+        deleteDialogBuilder.setPositiveButton(
+            "Yes"
+        ) { dialog, _ ->
+            viewModel.deleteSharedFile(file.id, file.sharedPersonCount.toInt())
+            dialog.cancel() }
+        deleteDialogBuilder.setNegativeButton(
+            "No"
+        ) { dialog, _ -> dialog.cancel() }
+        val alertDelete = deleteDialogBuilder.create()
+        alertDelete.show()
     }
 
     private fun setUiState(shareImageUiState: ShareImageUiState) {

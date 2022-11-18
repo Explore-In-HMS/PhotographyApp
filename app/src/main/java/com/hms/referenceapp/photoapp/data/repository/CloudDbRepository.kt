@@ -10,10 +10,7 @@ package com.hms.referenceapp.photoapp.data.repository
 
 import android.util.Log
 import com.hms.referenceapp.photoapp.common.Result
-import com.hms.referenceapp.photoapp.data.model.PhotoDetails
-import com.hms.referenceapp.photoapp.data.model.Photos
-import com.hms.referenceapp.photoapp.data.model.User
-import com.hms.referenceapp.photoapp.data.model.UserRelationship
+import com.hms.referenceapp.photoapp.data.model.*
 import com.hms.referenceapp.photoapp.data.remote.ObjectTypeInfoHelper
 import com.hms.referenceapp.photoapp.util.Event
 import com.huawei.agconnect.cloud.database.*
@@ -363,6 +360,20 @@ class CloudDbRepository @Inject constructor(
         }.addOnFailureListener {
             _allSharedPhotosResponse.value = Event(Result.Error(it))
         }
+    }
+
+    fun deleteSharedFile(fileId: Int) {
+        val fileToDelete = PhotoDetails()
+
+        fileToDelete.id = fileId
+        if (cloudDBZone == null) {
+            Log.w(TAG, "CloudDBZone is null, try re-open it")
+            return
+        }
+
+        val deleteTask = cloudDBZone!!.executeDelete(fileToDelete)
+        deleteTask.addOnSuccessListener {
+        }.addOnFailureListener { }
     }
 
 
