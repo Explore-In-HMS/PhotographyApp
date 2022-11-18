@@ -9,6 +9,7 @@
 package com.hms.referenceapp.photoapp.ui.shareimagedetail
 
 import android.graphics.Bitmap
+import com.hms.referenceapp.photoapp.data.model.Photos
 import com.hms.referenceapp.photoapp.data.model.ParcelableUser
 
 data class SharePhotoUiState(
@@ -18,6 +19,7 @@ data class SharePhotoUiState(
     val description: String,
     val sharedPersonCount: String,
     val photos: List<Bitmap>,
+    val updatedPhotos: List<Photos>,
     val sharedUserList: List<ParcelableUser>,
     val didIShare: Boolean,
     val loading: Boolean,
@@ -32,6 +34,7 @@ data class SharePhotoUiState(
             description = "",
             sharedPersonCount = "",
             photos = emptyList(),
+            updatedPhotos = emptyList(),
             sharedUserList = emptyList(),
             didIShare = true,
             loading = false,

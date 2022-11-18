@@ -18,5 +18,6 @@ data class SharePhotoModel(
     val fileId: String,
     val title: String,
     val description: String,
-    val sharedPersonCount: String
+    val sharedPersonCount: String,
+    val isFileSharedByMe: Boolean
 ) : Parcelable

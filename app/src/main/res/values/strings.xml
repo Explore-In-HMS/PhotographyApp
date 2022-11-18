@@ -97,5 +97,9 @@
     <string name="apply_dialog">OK</string>
     <string name="shared_people">Shared People</string>
 
+    <!-- DeletePhoto -->
+    <string name="delete_photos">Delete Photos</string>
+    <string name="delete_photos_warning">In order to delete, you must select at least one photo!</string>
+    <string name="delete_photos_successfully">Photo has been deleted successfully.</string>
 
 </resources>

@@ -16,9 +16,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.hms.referenceapp.photoapp.R
 import com.hms.referenceapp.photoapp.adapter.ImagesAdapter
 import com.hms.referenceapp.photoapp.adapter.SharedUsersAdapter
 import com.hms.referenceapp.photoapp.data.model.ParcelableUser
+import com.hms.referenceapp.photoapp.data.model.Photos
 import com.hms.referenceapp.photoapp.databinding.FragmentShareImageDetailBinding
 import com.hms.referenceapp.photoapp.databinding.SharedPeopleDialogDeleteBinding
 import com.hms.referenceapp.photoapp.ui.base.BaseFragment
@@ -67,14 +69,36 @@ class ShareImageDetailFragment :
                 )
             findNavController().navigate(action)
         }
+
+        val deletedPhotos: MutableList<Photos> = ArrayList()
+        imagesAdapter.setOnCardClickListener { image, clicked ->
+            if (clicked) {
+                deletedPhotos.add(image)
+            } else {
+                deletedPhotos.remove(image)
+            }
+        }
+
+        binding.deleteImageButton.setOnClickListener {
+            deleteSharedPhotos(deletedPhotos)
+        }
+    }
+
+    private fun deleteSharedPhotos(deletedPhotos: MutableList<Photos>) {
+        if (deletedPhotos.size > 0) {
+            viewModel.deleteSharedPhotos(deletedPhotos)
+            showToast(getString(R.string.delete_photos_successfully))
+        } else {
+            showToast(getString(R.string.delete_photos_warning))
+        }
     }
 
     override fun setupObservers() {
         collectLast(flow = viewModel.sharePhotoUiState, action = ::setSharePhotoUiState)
     }
 
-    private fun setPhotos(photos: List<Bitmap>) {
-        imagesAdapter.submitList(photos)
+    private fun setPhotos(listPhotos: List<Photos>) {
+        imagesAdapter.submitList(listPhotos)
     }
 
     private fun setSharePhotoUiState(sharePhotoUiState: SharePhotoUiState) {
@@ -100,7 +124,7 @@ class ShareImageDetailFragment :
             findNavController().popBackStack()
         }
 
-        setPhotos(sharePhotoUiState.photos)
+        setPhotos(sharePhotoUiState.updatedPhotos)
     }
 
     private fun showError(errorMessage: String) {

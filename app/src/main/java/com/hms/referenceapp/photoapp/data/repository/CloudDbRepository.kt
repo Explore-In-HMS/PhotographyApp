@@ -10,10 +10,7 @@ package com.hms.referenceapp.photoapp.data.repository
 
 import android.util.Log
 import com.hms.referenceapp.photoapp.common.Result
-import com.hms.referenceapp.photoapp.data.model.PhotoDetails
-import com.hms.referenceapp.photoapp.data.model.Photos
-import com.hms.referenceapp.photoapp.data.model.User
-import com.hms.referenceapp.photoapp.data.model.UserRelationship
+import com.hms.referenceapp.photoapp.data.model.*
 import com.hms.referenceapp.photoapp.data.remote.ObjectTypeInfoHelper
 import com.hms.referenceapp.photoapp.util.Event
 import com.huawei.agconnect.cloud.database.*
@@ -70,6 +67,10 @@ class CloudDbRepository @Inject constructor(
         MutableStateFlow<Event<Result<List<Photos>>>>(Event(Result.Success(emptyList())))
 
     val allSharedPhotosResponse get() = _allSharedPhotosResponse.asStateFlow()
+
+    private val _deleteSharedPhotosResponse =
+        MutableStateFlow<Event<Result<Photos>>>(Event(Result.Success(Photos())))
+    val deleteSharedPhotosResponse get() = _deleteSharedPhotosResponse.asStateFlow()
 
     private val _deleteUserResponse =
         MutableStateFlow<Event<Result<PhotoDetails>>>(Event(Result.Success(PhotoDetails())))
@@ -364,6 +365,20 @@ class CloudDbRepository @Inject constructor(
         }
     }
 
+    fun deleteSharedFile(fileId: Int) {
+        val fileToDelete = PhotoDetails()
+
+        fileToDelete.id = fileId
+        if (cloudDBZone == null) {
+            Log.w(TAG, "CloudDBZone is null, try re-open it")
+            return
+        }
+
+        val deleteTask = cloudDBZone!!.executeDelete(fileToDelete)
+        deleteTask.addOnSuccessListener {
+        }.addOnFailureListener { }
+    }
+
 
     private fun getMorePhotos(
         fileId: String
@@ -429,7 +444,7 @@ class CloudDbRepository @Inject constructor(
     }
 
 
-    fun getPendingRequests(){
+    fun getPendingRequests() {
         if (cloudDBZone == null) {
             return
         }
@@ -437,10 +452,48 @@ class CloudDbRepository @Inject constructor(
             CloudDBZoneQuery.where(UserRelationship::class.java),
             CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
         )
-        queryTask.addOnSuccessListener { snapshot -> processUserRelationQueryResult(snapshot)
+        queryTask.addOnSuccessListener { snapshot ->
+            processUserRelationQueryResult(snapshot)
         }
             .addOnFailureListener {
 
+            }
+    }
+
+
+    fun deletePhotos(id: Int) {
+        _deleteSharedPhotosResponse.value = Event(Result.Loading)
+        if (cloudDBZone == null) {
+            Log.w(TAG, "CloudDBZone is null, try re-open it")
+            _deleteSharedPhotosResponse.value =
+                Event(Result.Error(Exception("Something went wrong")))
+            return
+        }
+
+        val query: CloudDBZoneQuery<Photos> =
+            CloudDBZoneQuery.where(Photos::class.java).equalTo("id", id)
+        val queryTask = cloudDBZone!!.executeQuery(
+            query,
+            CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
+        )
+
+        queryTask.addOnSuccessListener { snapshot ->
+            var photo = Photos()
+            while (snapshot.snapshotObjects.hasNext()) {
+                photo = snapshot.snapshotObjects.next()
+            }
+            val deleteTask = cloudDBZone!!.executeDelete(photo)
+            deleteTask.addOnSuccessListener {
+                _deleteSharedPhotosResponse.value = Event(Result.Success(photo))
+            }
+            deleteTask.addOnFailureListener {
+                _deleteSharedPhotosResponse.value =
+                    Event(Result.Error(Exception("Something went wrong during deleting")))
+            }
+        }
+            .addOnFailureListener {
+                _deleteSharedPhotosResponse.value =
+                    Event(Result.Error(Exception("Something went wrong")))
             }
     }
 

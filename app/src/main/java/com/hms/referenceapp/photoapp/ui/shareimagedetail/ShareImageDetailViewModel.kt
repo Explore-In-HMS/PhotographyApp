@@ -23,6 +23,7 @@ import com.hms.referenceapp.photoapp.data.repository.CloudDbRepository
 import com.hms.referenceapp.photoapp.ui.base.BaseViewModel
 import com.hms.referenceapp.photoapp.ui.shareimage.SharePhotoModel
 import com.hms.referenceapp.photoapp.util.ext.toBitmap
+import com.hms.referenceapp.photoapp.util.ext.toBytes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -76,7 +77,10 @@ class ShareImageDetailViewModel @Inject constructor(
                 when (it) {
                     is Result.Error -> showError(it.exception.localizedMessage.orEmpty())
                     Result.Loading -> showLoading()
-                    is Result.Success -> showAlreadySharedPhotos(it.data.map { it.byteArrayOfPhoto })
+                    is Result.Success -> showAlreadySharedPhotos(
+                        it.data.map { it.byteArrayOfPhoto },
+                        it.data
+                    )
                 }
             }
         }.launchIn(viewModelScope)
@@ -84,10 +88,40 @@ class ShareImageDetailViewModel @Inject constructor(
         cloudDbRepository.getSharedPhotos(sharePhotoModel.fileId)
     }
 
-    private fun showAlreadySharedPhotos(sharedPhotos: List<ByteArray>) {
+    private fun showAlreadySharedPhotos(
+        sharedPhotos: List<ByteArray>,
+        updatedPhotos: List<Photos>
+    ) {
         _sharePhotoUiState.update { current ->
             current.copy(
                 photos = current.photos + sharedPhotos.map { convertByteArrayToBitmap(it) },
+                updatedPhotos = current.updatedPhotos + updatedPhotos,
+                error = null,
+                loading = false
+            )
+        }
+    }
+
+    fun deleteSharedPhotos(deletedPhotos: List<Photos>) {
+        deletedPhotos.forEach {
+            cloudDbRepository.deletePhotos(it.id)
+        }
+
+        cloudDbRepository.deleteSharedPhotosResponse.onEach { result ->
+            result.getContentIfNotHandled()?.let { it ->
+                when (it) {
+                    is Result.Error -> showError(it.exception.localizedMessage.orEmpty())
+                    Result.Loading -> showLoading()
+                    is Result.Success -> removeDeletedSharedPhotos(deletedPhotos)
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun removeDeletedSharedPhotos(deletedPhotos: List<Photos>) {
+        _sharePhotoUiState.update { current ->
+            current.copy(
+                updatedPhotos = current.updatedPhotos - deletedPhotos.toSet(),
                 error = null,
                 loading = false
             )
@@ -95,11 +129,21 @@ class ShareImageDetailViewModel @Inject constructor(
     }
 
     fun setSelectedPhoto(selectedPhotoList: List<Uri>, contentResolver: ContentResolver) {
-        selectedPhotoList.forEach {
-            selectedPhotos.add(it.toBitmap(contentResolver, true))
-        }.also {
-            _sharePhotoUiState.update { current ->
-                current.copy(photos = (current.photos + selectedPhotos).distinct())
+        viewModelScope.launch {
+            val newList = arrayListOf<Photos>()
+            selectedPhotoList.forEach {
+                selectedPhotos.add(it.toBitmap(contentResolver, true))
+                newList.add(Photos().apply {
+                    id = sharePhotoUiState.value.id
+                    fileId = sharePhotoUiState.value.fileId
+                    byteArrayOfPhoto = it.toBytes(contentResolver)
+                })
+            }.also {
+                _sharePhotoUiState.update { current ->
+                    current.copy(
+                        updatedPhotos = current.updatedPhotos + newList
+                    )
+                }
             }
         }
     }
