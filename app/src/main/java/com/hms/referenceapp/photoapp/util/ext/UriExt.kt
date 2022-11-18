@@ -21,3 +21,6 @@ fun Uri.toBitmap(contentResolver: ContentResolver, isMutable: Boolean): Bitmap {
         bitmap.copy(Bitmap.Config.ARGB_8888, true)
     } else bitmap
 }
+
+fun Uri.toBytes(contentResolver: ContentResolver): ByteArray? =
+    contentResolver.openInputStream(this)?.buffered()?.use { it.readBytes() }
