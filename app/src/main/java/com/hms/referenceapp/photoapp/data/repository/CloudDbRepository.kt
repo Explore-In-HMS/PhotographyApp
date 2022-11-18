@@ -55,8 +55,7 @@ class CloudDbRepository @Inject constructor(
     val cloudDbUserResponse: StateFlow<MutableList<User>?> get() = _cloudDbUserResponse.asStateFlow()
 
     private val initialCloudDbUserRelationResponseList: MutableList<UserRelationship>? = null
-    private val _cloudDbUserRelationResponse =
-        MutableStateFlow(initialCloudDbUserRelationResponseList)
+    private val _cloudDbUserRelationResponse = MutableStateFlow(initialCloudDbUserRelationResponseList)
     val cloudDbUserRelationResponse: StateFlow<MutableList<UserRelationship>?> get() = _cloudDbUserRelationResponse.asStateFlow()
 
     private var limit = 0
@@ -69,10 +68,14 @@ class CloudDbRepository @Inject constructor(
 
     val allSharedPhotosResponse get() = _allSharedPhotosResponse.asStateFlow()
 
-
     private val _deleteSharedPhotosResponse =
         MutableStateFlow<Event<Result<Photos>>>(Event(Result.Success(Photos())))
     val deleteSharedPhotosResponse get() = _deleteSharedPhotosResponse.asStateFlow()
+
+    private val _deleteUserResponse =
+        MutableStateFlow<Event<Result<PhotoDetails>>>(Event(Result.Success(PhotoDetails())))
+
+    val deleteUserResponse get() = _deleteUserResponse.asStateFlow()
 
     init {
         openDb()
@@ -496,8 +499,75 @@ class CloudDbRepository @Inject constructor(
 
     private fun getLimit(count: Int) = (if (count >= 4) 4 else count)
 
+    fun deleteUserFromSharedFile(_fileId: String, _receiverId: Long) {
+        _deleteUserResponse.value = Event(Result.Loading)
+        if (cloudDBZone == null) {
+            Log.w(TAG, "CloudDBZone is null, try re-open it")
+            _deleteUserResponse.value = Event(Result.Error(Exception("Something went wrong")))
+            return
+        }
+
+        val query: CloudDBZoneQuery<PhotoDetails> =
+            CloudDBZoneQuery.where(PhotoDetails::class.java).equalTo(FILE_ID, _fileId)
+        val queryTask = cloudDBZone!!.executeQuery(
+            query,
+            CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
+        )
+
+        val updatedList = arrayListOf<PhotoDetails>()
+
+        queryTask.addOnSuccessListener { snapshot ->
+            var photoDetailDeleted = PhotoDetails()
+            while (snapshot.snapshotObjects.hasNext()) {
+                val photoDetail = snapshot.snapshotObjects.next()
+                if (photoDetail.receiverId.equals(_receiverId.toString())) {
+                    photoDetailDeleted = photoDetail
+                }
+                else {
+                    updatedList.add(
+                        PhotoDetails().apply {
+                            id = photoDetail.id
+                            senderId = photoDetail.senderId
+                            senderName = photoDetail.senderName
+                            receiverId = photoDetail.receiverId
+                            receiverName = photoDetail.receiverName
+                            fileId = photoDetail.fileId
+                            fileName = photoDetail.fileName
+                            fileDesc = photoDetail.fileDesc
+                            numberOfPeopleShared = (photoDetail.numberOfPeopleShared.toInt() - 1).toString()
+                        }
+                    )
+                }
+            }
+            val deleteTask = cloudDBZone!!.executeDelete(photoDetailDeleted)
+            deleteTask.addOnSuccessListener {
+                _deleteUserResponse.value = Event(Result.Success(photoDetailDeleted))
+                updateSharedPeopleCount(updatedList)
+            }
+            deleteTask.addOnFailureListener { exception ->
+                _deleteUserResponse.value = Event(Result.Error(exception))
+            }
+        }.addOnFailureListener { exception ->
+            _deleteUserResponse.value = Event(Result.Error(exception))
+        }
+    }
+
+    private fun updateSharedPeopleCount(photoDetailList: List<PhotoDetails>){
+        if (cloudDBZone == null) {
+            Log.w(TAG, "CloudDBZone is null, try re-open it")
+        } else{
+            val upsertTask = cloudDBZone!!.executeUpsert(photoDetailList)
+            upsertTask.addOnSuccessListener { cloudDBZoneResult ->
+                Log.e(TAG, cloudDBZoneResult.toString())
+            }.addOnFailureListener {
+                Log.e(TAG, it.message.toString())
+            }
+        }
+    }
+
     companion object {
         private const val DB_NAME = "PhotoAppDB"
         private const val TAG = "CloudDB"
+        private const val FILE_ID = "fileId"
     }
 }

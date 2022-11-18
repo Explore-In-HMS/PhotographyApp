@@ -8,14 +8,21 @@
 
 package com.hms.referenceapp.photoapp.ui.shareimagedetail
 
+import android.app.AlertDialog
+import android.graphics.Bitmap
+import android.view.LayoutInflater
+import android.widget.LinearLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.hms.referenceapp.photoapp.R
 import com.hms.referenceapp.photoapp.adapter.ImagesAdapter
+import com.hms.referenceapp.photoapp.adapter.SharedUsersAdapter
+import com.hms.referenceapp.photoapp.data.model.ParcelableUser
 import com.hms.referenceapp.photoapp.data.model.Photos
 import com.hms.referenceapp.photoapp.databinding.FragmentShareImageDetailBinding
+import com.hms.referenceapp.photoapp.databinding.SharedPeopleDialogDeleteBinding
 import com.hms.referenceapp.photoapp.ui.base.BaseFragment
 import com.hms.referenceapp.photoapp.util.ext.collectLast
 import com.hms.referenceapp.photoapp.util.ext.getSpanCountByOrientation
@@ -34,6 +41,9 @@ class ShareImageDetailFragment :
 
     @Inject
     lateinit var imagesAdapter: ImagesAdapter
+
+    @Inject
+    lateinit var sharedUsersAdapter: SharedUsersAdapter
 
     override fun setupUi() {
         binding.recyclerviewSharedImages.adapter = imagesAdapter
@@ -92,11 +102,14 @@ class ShareImageDetailFragment :
     }
 
     private fun setSharePhotoUiState(sharePhotoUiState: SharePhotoUiState) {
+        setDialogAdapter(sharePhotoUiState.sharedUserList, sharePhotoUiState.didIShare)
+
         with(binding) {
             val isLoading = sharePhotoUiState.loading
             title.text = sharePhotoUiState.title
             description.text = sharePhotoUiState.description
-            filePersonCountDetailScreen.text = sharePhotoUiState.sharedPersonCount
+            ivIconDetailScreen.setOnClickListener { showSharedPeopleDialog() }
+            filePersonCountDetailScreen.text = sharePhotoUiState.sharedUserList.size.toString()
             progressBar.setVisibility(isVisible = isLoading)
             btnShareImage.isEnabled = isLoading.not()
             selectImageBtn.isEnabled = isLoading.not()
@@ -114,7 +127,6 @@ class ShareImageDetailFragment :
         setPhotos(sharePhotoUiState.updatedPhotos)
     }
 
-
     private fun showError(errorMessage: String) {
         showToast(errorMessage)
     }
@@ -123,4 +135,43 @@ class ShareImageDetailFragment :
         registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { result ->
             viewModel.setSelectedPhoto(result, requireContext().contentResolver)
         }
+
+    private fun deleteSharedUser(user: ParcelableUser) {
+        viewModel.deleteUserFromSharedFile(viewModel.sharePhotoUiState.value.fileId, user.id)
+    }
+
+    private lateinit var alertDialogSharedPeople: AlertDialog
+
+    private fun setDialogAdapter(sharedUserList: List<ParcelableUser>, didIShare: Boolean){
+        with(sharedUsersAdapter) {
+            setDidIShared(didIShare)
+            setOnItemClickListener(::deleteSharedUser)
+            submitList(sharedUserList)
+        }
+
+        if(sharedUserList.isEmpty()){
+            alertDialogSharedPeople.dismiss()
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun showSharedPeopleDialog(){
+        val li = LayoutInflater.from(context)
+        val dialogBinding = SharedPeopleDialogDeleteBinding.inflate(li)
+
+        val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(context)
+        alertDialogBuilder.setView(dialogBinding.root)
+        dialogBinding.rvSharedPeople.adapter = sharedUsersAdapter
+
+        alertDialogSharedPeople = alertDialogBuilder.create()
+        alertDialogSharedPeople.show()
+        alertDialogSharedPeople.window?.setLayout(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        dialogBinding.button.setOnClickListener {
+            alertDialogSharedPeople.dismiss()
+        }
+    }
 }

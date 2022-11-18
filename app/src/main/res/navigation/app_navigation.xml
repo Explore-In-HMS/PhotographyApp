@@ -145,6 +145,12 @@
         <argument
             android:name="sharePhotoModel"
             app:argType="com.hms.referenceapp.photoapp.ui.shareimage.SharePhotoModel" />
+        <argument
+            android:name="sharedUserList"
+            app:argType="com.hms.referenceapp.photoapp.data.model.ParcelableUser[]"/>
+        <argument
+            android:name="didIShare"
+            app:argType="boolean"/>
         <action
             android:id="@+id/action_shareImageDetailFragment_to_openImageFragment"
             app:destination="@id/openImageFragment" />
