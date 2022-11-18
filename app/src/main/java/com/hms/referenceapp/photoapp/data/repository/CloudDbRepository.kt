@@ -464,7 +464,10 @@ class CloudDbRepository @Inject constructor(
         )
 
         queryTask.addOnSuccessListener { snapshot ->
-            val photo = snapshot.snapshotObjects.next()
+            var photo = Photos()
+            while (snapshot.snapshotObjects.hasNext()) {
+                photo = snapshot.snapshotObjects.next()
+            }
             val deleteTask = cloudDBZone!!.executeDelete(photo)
             deleteTask.addOnSuccessListener {
                 _deleteSharedPhotosResponse.value = Event(Result.Success(photo))
