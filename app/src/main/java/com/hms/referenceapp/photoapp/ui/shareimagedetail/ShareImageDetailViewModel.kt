@@ -120,8 +120,11 @@ class ShareImageDetailViewModel @Inject constructor(
         }
     }
 
-    fun setSelectedPhoto(selectedPhotoList: List<Uri>, contentResolver: ContentResolver) {
+    private fun setSelectedPhoto(selectedPhotoList: List<Uri>, contentResolver: ContentResolver) {
         viewModelScope.launch {
+            if (sharePhotoUiState.value.arePhotosDuplicate){
+                showError("Duplicate photos has been removed!!")
+            }
             val newList = arrayListOf<Photos>()
             selectedPhotoList.forEach {
                 selectedPhotos.add(it.toBitmap(contentResolver, true))
@@ -204,6 +207,25 @@ class ShareImageDetailViewModel @Inject constructor(
 
     private fun convertByteArrayToBitmap(byteArray: ByteArray): Bitmap {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    }
+
+    fun cleanSetSelectedPhotos(selectedPhotoList: List<Uri>, contentResolver: ContentResolver) {
+        val cleanSelectedPhotos = hashMapOf<String, Uri>()
+        var sizeIncludeDuplicates : Int
+        viewModelScope.launch {
+            selectedPhotoList.forEach { uri ->
+                cleanSelectedPhotos[convertBitmapToByteArray((convertBitmapToByteArray(uri.toBitmap(contentResolver, true))).toBitmap()).contentToString()] =  uri
+            }
+            sizeIncludeDuplicates = cleanSelectedPhotos.size
+            selectedPhotos.forEach {bitmap ->
+                cleanSelectedPhotos.remove(convertBitmapToByteArray((convertBitmapToByteArray(bitmap)).toBitmap()).contentToString())
+            }
+            sharePhotoUiState.value.photos.forEach { sharedBitmap ->
+                cleanSelectedPhotos.remove(convertBitmapToByteArray(sharedBitmap).contentToString())
+            }
+            sharePhotoUiState.value.arePhotosDuplicate = cleanSelectedPhotos.size < sizeIncludeDuplicates
+            setSelectedPhoto(cleanSelectedPhotos.values.toList(), contentResolver)
+        }
     }
 
     private suspend fun convertBitmapToByteArray(bitmap: Bitmap) =

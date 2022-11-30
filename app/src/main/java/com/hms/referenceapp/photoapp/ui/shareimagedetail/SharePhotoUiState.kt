@@ -21,7 +21,8 @@ data class SharePhotoUiState(
     val updatedPhotos: List<Photos>,
     val loading: Boolean,
     val error: String?,
-    val isPhotosSharedSuccessuflly: Boolean
+    val isPhotosSharedSuccessuflly: Boolean,
+    var arePhotosDuplicate: Boolean
 ) {
     companion object {
         fun initial() = SharePhotoUiState(
@@ -34,7 +35,8 @@ data class SharePhotoUiState(
             updatedPhotos = emptyList(),
             loading = false,
             error = null,
-            isPhotosSharedSuccessuflly = false
+            isPhotosSharedSuccessuflly = false,
+            arePhotosDuplicate = false
         )
     }
 }

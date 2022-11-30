@@ -121,6 +121,6 @@ class ShareImageDetailFragment :
 
     private var selectPhotosWithIntent =
         registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { result ->
-            viewModel.setSelectedPhoto(result, requireContext().contentResolver)
+            viewModel.cleanSetSelectedPhotos(result, requireContext().contentResolver)
         }
 }
