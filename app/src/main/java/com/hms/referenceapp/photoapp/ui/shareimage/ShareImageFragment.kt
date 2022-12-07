@@ -27,11 +27,9 @@ import com.hms.referenceapp.photoapp.ui.base.BaseFragment
 import com.hms.referenceapp.photoapp.util.ext.collectLast
 import com.hms.referenceapp.photoapp.util.ext.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 import android.R as R1
 
-@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class ShareImageFragment :
     BaseFragment<ShareImageViewModel, FragmentShareImageBinding>(FragmentShareImageBinding::inflate) {
@@ -73,10 +71,20 @@ class ShareImageFragment :
         }
 
         filesYouSharedAdapter.setOnItemClickListener(::navigateShareImageDetailPage)
-        filesYouSharedAdapter.setOnSharedPersonItemClickListener { showSharedPeopleDialog(sharePhotoModel = it, true) }
-        filesYouSharedAdapter.setOnDeleteItemClickListener{showDeleteFileDialog(it)}
+        filesYouSharedAdapter.setOnSharedPersonItemClickListener {
+            showSharedPeopleDialog(
+                sharePhotoModel = it,
+                true
+            )
+        }
+        filesYouSharedAdapter.setOnDeleteItemClickListener { showDeleteFileDialog(it) }
         sharedFilesWithYouAdapter.setOnItemClickListener(::navigateShareImageDetailPage)
-        sharedFilesWithYouAdapter.setOnSharedPersonItemClickListener { showSharedPeopleDialog(sharePhotoModel = it, false) }
+        sharedFilesWithYouAdapter.setOnSharedPersonItemClickListener {
+            showSharedPeopleDialog(
+                sharePhotoModel = it,
+                false
+            )
+        }
     }
 
     override fun setupObservers() {
@@ -87,13 +95,12 @@ class ShareImageFragment :
         val userList = arrayListOf<ParcelableUser>()
         val didIShare: Boolean
         val filesSharedWithYou = viewModel.getSharedWithYouPeopleFromFileId(sharePhotoModel.fileId)
-        if (filesSharedWithYou?.isEmpty() == false){
+        if (filesSharedWithYou?.isEmpty() == false) {
             didIShare = false
             filesSharedWithYou.forEach {
                 userList.add(ParcelableUser(it.id, it.unionId, it.name))
             }
-        }
-        else {
+        } else {
             didIShare = true
             viewModel.getSharedPeopleFromFileId(sharePhotoModel.fileId)?.forEach {
                 userList.add(ParcelableUser(it.id, it.unionId, it.name))
@@ -119,9 +126,13 @@ class ShareImageFragment :
         }
     }
 
-    private fun showSharedPeopleDialog(sharePhotoModel: SharePhotoModel, filesYouSharedStateValue: Boolean){
-        val sharedUserList = if (filesYouSharedStateValue) viewModel.getSharedPeopleFromFileId(sharePhotoModel.fileId)
-                         else viewModel.getSharedWithYouPeopleFromFileId(sharePhotoModel.fileId)
+    private fun showSharedPeopleDialog(
+        sharePhotoModel: SharePhotoModel,
+        filesYouSharedStateValue: Boolean
+    ) {
+        val sharedUserList =
+            if (filesYouSharedStateValue) viewModel.getSharedPeopleFromFileId(sharePhotoModel.fileId)
+            else viewModel.getSharedWithYouPeopleFromFileId(sharePhotoModel.fileId)
 
         val sharedUserNameList = arrayListOf<String>()
         sharedUserList?.forEach {
@@ -133,8 +144,10 @@ class ShareImageFragment :
         val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(context)
         alertDialogBuilder.setView(binding.root)
 
-        binding.lvSharedPeople.adapter = ArrayAdapter(requireActivity(),
-            R1.layout.simple_list_item_1, sharedUserNameList)
+        binding.lvSharedPeople.adapter = ArrayAdapter(
+            requireActivity(),
+            R1.layout.simple_list_item_1, sharedUserNameList
+        )
 
 
         val alertDialogSharedPeople = alertDialogBuilder.create()
@@ -149,7 +162,7 @@ class ShareImageFragment :
         }
     }
 
-    private fun showDeleteFileDialog(file: SharePhotoModel){
+    private fun showDeleteFileDialog(file: SharePhotoModel) {
         val deleteDialogBuilder = AlertDialog.Builder(context)
         deleteDialogBuilder.setMessage("Are you sure you want to delete this file?")
         deleteDialogBuilder.setCancelable(true)
@@ -157,7 +170,8 @@ class ShareImageFragment :
             "Yes"
         ) { dialog, _ ->
             viewModel.deleteSharedFile(file.id, file.sharedPersonCount.toInt())
-            dialog.cancel() }
+            dialog.cancel()
+        }
         deleteDialogBuilder.setNegativeButton(
             "No"
         ) { dialog, _ -> dialog.cancel() }

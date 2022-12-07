@@ -20,7 +20,6 @@ import com.hms.referenceapp.photoapp.util.Constant.RECEIVER_ID
 import com.hms.referenceapp.photoapp.util.Constant.SENDER_ID
 import com.huawei.agconnect.auth.AGConnectAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -120,9 +119,7 @@ class ShareImageViewModel @Inject constructor(
         }
     }
 
-    @ExperimentalCoroutinesApi
     fun prepareFileData(fileInformationModel: FileInformationModel?) {
-
         var milliSecond = System.currentTimeMillis().toInt()
         val fileIdWithMillisecond = "fileId_${milliSecond}"
 
@@ -150,7 +147,6 @@ class ShareImageViewModel @Inject constructor(
         }
     }
 
-    @ExperimentalCoroutinesApi
     private fun saveFileWithPersonToCloud(fileWithPersonList: PhotoDetails) {
         viewModelScope.launch {
             cloudDbRepository.saveToCloudDB(fileWithPersonList).collect {

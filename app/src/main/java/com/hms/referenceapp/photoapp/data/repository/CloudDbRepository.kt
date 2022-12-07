@@ -10,13 +10,15 @@ package com.hms.referenceapp.photoapp.data.repository
 
 import android.util.Log
 import com.hms.referenceapp.photoapp.common.Result
-import com.hms.referenceapp.photoapp.data.model.*
+import com.hms.referenceapp.photoapp.data.model.PhotoDetails
+import com.hms.referenceapp.photoapp.data.model.Photos
+import com.hms.referenceapp.photoapp.data.model.User
+import com.hms.referenceapp.photoapp.data.model.UserRelationship
 import com.hms.referenceapp.photoapp.data.remote.ObjectTypeInfoHelper
 import com.hms.referenceapp.photoapp.util.Event
 import com.huawei.agconnect.cloud.database.*
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -109,7 +111,6 @@ class CloudDbRepository @Inject constructor(
         cloudDB.createObjectType(ObjectTypeInfoHelper.getObjectTypeInfo())
     }
 
-    @ExperimentalCoroutinesApi
     fun saveToCloudDB(cloudDBZoneObject: CloudDBZoneObject): Flow<Result<Boolean>> = callbackFlow {
         trySend(Result.Loading)
         if (isDpOpen().not()) {
