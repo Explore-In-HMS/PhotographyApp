@@ -53,4 +53,6 @@ object Constant {
     const val FILE_ID = "fileId"
     const val SENDER_ID = "senderId"
     const val RECEIVER_ID = "receiverId"
+    const val REQUEST_KEY = "requestKey"
+    const val BUNDLE_KEY = "bundleKey"
 }

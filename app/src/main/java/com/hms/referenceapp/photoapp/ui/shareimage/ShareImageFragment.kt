@@ -17,12 +17,15 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.hms.referenceapp.photoapp.R
 import com.hms.referenceapp.photoapp.adapter.SharedFileAdapter
 import com.hms.referenceapp.photoapp.data.model.FileInformationModel
 import com.hms.referenceapp.photoapp.data.model.ParcelableUser
 import com.hms.referenceapp.photoapp.databinding.FragmentShareImageBinding
 import com.hms.referenceapp.photoapp.databinding.SharedPeopleDialogBinding
 import com.hms.referenceapp.photoapp.ui.base.BaseFragment
+import com.hms.referenceapp.photoapp.util.Constant.BUNDLE_KEY
+import com.hms.referenceapp.photoapp.util.Constant.REQUEST_KEY
 import com.hms.referenceapp.photoapp.util.ext.collectLast
 import com.hms.referenceapp.photoapp.util.ext.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,8 +48,8 @@ class ShareImageFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setFragmentResultListener("requestKey") { _, bundle ->
-            fileInformationModel = bundle.getParcelable("bundleKey")
+        setFragmentResultListener(REQUEST_KEY) { _, bundle ->
+            fileInformationModel = bundle.getParcelable(BUNDLE_KEY)
             viewModel.prepareFileData(fileInformationModel)
         }
     }
@@ -149,7 +152,7 @@ class ShareImageFragment :
 
         val alertDialogSharedPeople = alertDialogBuilder.create()
         alertDialogSharedPeople.show()
-        alertDialogSharedPeople.getWindow()?.setLayout(
+        alertDialogSharedPeople.window?.setLayout(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
@@ -161,16 +164,16 @@ class ShareImageFragment :
 
     private fun showDeleteFileDialog(file: SharePhotoModel) {
         val deleteDialogBuilder = AlertDialog.Builder(context)
-        deleteDialogBuilder.setMessage("Are you sure you want to delete this file?")
+        deleteDialogBuilder.setMessage(getString(R.string.delete_warning))
         deleteDialogBuilder.setCancelable(true)
         deleteDialogBuilder.setPositiveButton(
-            "Yes"
+            getString(R.string.yes)
         ) { dialog, _ ->
             viewModel.deleteSharedFile(file.id, file.sharedPersonCount.toInt())
             dialog.cancel()
         }
         deleteDialogBuilder.setNegativeButton(
-            "No"
+            getString(R.string.no)
         ) { dialog, _ -> dialog.cancel() }
         val alertDelete = deleteDialogBuilder.create()
         alertDelete.show()
@@ -182,7 +185,7 @@ class ShareImageFragment :
             viewModel.errorShown()
         }
         shareImageUiState.isSavedFilesWithPerson.firstOrNull()?.let {
-            showToast("Saved Data Successfully")
+            showToast(getString(R.string.saved_data_successfully))
             viewModel.savedFileWithPerson()
         }
 
