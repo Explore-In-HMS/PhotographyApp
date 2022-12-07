@@ -10,7 +10,6 @@ package com.hms.referenceapp.photoapp.ui.shareimage
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
@@ -48,8 +47,6 @@ class ShareImageFragment :
         super.onCreate(savedInstanceState)
         setFragmentResultListener("requestKey") { _, bundle ->
             fileInformationModel = bundle.getParcelable("bundleKey")
-            Log.d("ShareImageFragment", "result : $fileInformationModel")
-
             viewModel.prepareFileData(fileInformationModel)
         }
     }
