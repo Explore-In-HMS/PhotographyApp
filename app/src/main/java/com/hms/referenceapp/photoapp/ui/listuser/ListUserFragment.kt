@@ -42,11 +42,15 @@ class ListUserFragment : DialogFragment() {
     @Inject
     lateinit var listUserAdapter: ListUserAdapter
 
+    companion object{
+        const val REQUEST_KEY = "requestKey"
+        const val BUNDLE_KEY = "bundleKey"
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentListUserBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -66,7 +70,7 @@ class ListUserFragment : DialogFragment() {
                 numberOfPeopleShared = viewModel.getSelectedUsers().count().toString()
             )
             viewModel.controlFileInformationModel(fileInformation)
-            setFragmentResult("requestKey", bundleOf("bundleKey" to fileInformation))
+            setFragmentResult(REQUEST_KEY, bundleOf(BUNDLE_KEY to fileInformation))
         }
     }
 
@@ -86,21 +90,18 @@ class ListUserFragment : DialogFragment() {
     }
 
     private fun setUiState(listUserUiState: ListUserUiState) {
-
-        listUserUiState.error?.let {
-            showError(it)
-            viewModel.errorShown()
-        }
-
-        listUserUiState.savedUserList.let {
-            listUserAdapter.setUserList(it)
-        }
-
-        listUserUiState.loading.let {
-
-        }
-        if (listUserUiState.shareImageInformationFileTaken) {
-            findNavController().popBackStack()
+        with(listUserUiState){
+            error?.let {
+                showError(it)
+                viewModel.errorShown()
+            }
+            savedUserList.let {
+                listUserAdapter.setUserList(it)
+            }
+            loading.let {}
+            if (shareImageInformationFileTaken) {
+                findNavController().popBackStack()
+            }
         }
     }
 

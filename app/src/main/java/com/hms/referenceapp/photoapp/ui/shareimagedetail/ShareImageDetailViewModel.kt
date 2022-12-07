@@ -40,20 +40,15 @@ class ShareImageDetailViewModel @Inject constructor(
     private val cloudDbRepository: CloudDbRepository,
 ) : BaseViewModel() {
 
-
     private val selectedPhotos = mutableListOf<Bitmap>()
 
     private val _sharePhotoUiState = MutableStateFlow(SharePhotoUiState.initial())
     val sharePhotoUiState get() = _sharePhotoUiState.asStateFlow()
 
     init {
-        val sharePhotoModel =
-            ShareImageDetailFragmentArgs.fromSavedStateHandle(savedStateHandle).sharePhotoModel
-        val sharedUserList =
-            ShareImageDetailFragmentArgs.fromSavedStateHandle(savedStateHandle).sharedUserList
-        val didIShare =
-            ShareImageDetailFragmentArgs.fromSavedStateHandle(savedStateHandle).didIShare
-        setSharedPhotosInfo(sharePhotoModel, sharedUserList, didIShare)
+        with(ShareImageDetailFragmentArgs.fromSavedStateHandle(savedStateHandle)){
+            setSharedPhotosInfo(sharePhotoModel, sharedUserList, didIShare)
+        }
     }
 
 
@@ -76,7 +71,7 @@ class ShareImageDetailViewModel @Inject constructor(
             result.getContentIfNotHandled()?.let { it ->
                 when (it) {
                     is Result.Error -> showError(it.exception.localizedMessage.orEmpty())
-                    Result.Loading -> showLoading()
+                    is Result.Loading -> showLoading()
                     is Result.Success -> showAlreadySharedPhotos(
                         it.data.map { it.byteArrayOfPhoto },
                         it.data
@@ -111,7 +106,7 @@ class ShareImageDetailViewModel @Inject constructor(
             result.getContentIfNotHandled()?.let { it ->
                 when (it) {
                     is Result.Error -> showError(it.exception.localizedMessage.orEmpty())
-                    Result.Loading -> showLoading()
+                    is Result.Loading -> showLoading()
                     is Result.Success -> removeDeletedSharedPhotos(deletedPhotos)
                 }
             }
@@ -154,7 +149,7 @@ class ShareImageDetailViewModel @Inject constructor(
             result.getContentIfNotHandled()?.let { it ->
                 when (it) {
                     is Result.Error -> showError(it.exception.localizedMessage.orEmpty())
-                    Result.Loading -> showLoading()
+                    is Result.Loading -> showLoading()
                     is Result.Success -> updateSharedUserList(it.data)
                 }
             }
@@ -208,7 +203,7 @@ class ShareImageDetailViewModel @Inject constructor(
 
     private fun showLoading() {
         _sharePhotoUiState.update { current ->
-            current.copy(loading = true, error = null, isPhotosSharedSuccessuflly = false)
+            current.copy(loading = true, error = null, isPhotosSharedSuccessfully = false)
         }
     }
 
@@ -217,14 +212,14 @@ class ShareImageDetailViewModel @Inject constructor(
             current.copy(
                 loading = false,
                 error = message,
-                isPhotosSharedSuccessuflly = false
+                isPhotosSharedSuccessfully = false
             )
         }
     }
 
     private fun showSuccess() {
         _sharePhotoUiState.update { current ->
-            current.copy(loading = false, error = null, isPhotosSharedSuccessuflly = true)
+            current.copy(loading = false, error = null, isPhotosSharedSuccessfully = true)
         }
     }
 
