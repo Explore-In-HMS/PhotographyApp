@@ -57,6 +57,7 @@
     <!-- Share Image Detail -->
     <string name="select_photo">Select Photo</string>
     <string name="detail_icon">Detail Icon</string>
+    <string name="photos_shared_successfully">Photos shared successfully</string>
 
     <!-- Tag Detail -->
     <string name="tag_name">TAG NAME</string>
