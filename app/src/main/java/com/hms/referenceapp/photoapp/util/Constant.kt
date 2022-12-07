@@ -49,4 +49,8 @@ object Constant {
         "Violet tone" to 24,
     )
 
+    // Share Image
+    const val FILE_ID = "fileId"
+    const val SENDER_ID = "senderId"
+    const val RECEIVER_ID = "receiverId"
 }

@@ -15,6 +15,9 @@ import com.hms.referenceapp.photoapp.data.model.PhotoDetails
 import com.hms.referenceapp.photoapp.data.model.User
 import com.hms.referenceapp.photoapp.data.repository.CloudDbRepository
 import com.hms.referenceapp.photoapp.ui.base.BaseViewModel
+import com.hms.referenceapp.photoapp.util.Constant.FILE_ID
+import com.hms.referenceapp.photoapp.util.Constant.RECEIVER_ID
+import com.hms.referenceapp.photoapp.util.Constant.SENDER_ID
 import com.huawei.agconnect.auth.AGConnectAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -79,7 +82,7 @@ class ShareImageViewModel @Inject constructor(
                     if (it != null && hashmapFilesSharedWithYouPeople[photoDetails.fileId.toString()] == null) {
                         cloudDbRepository.addSubscriptionForSharedFilesWithYouReceivers(
                             it,
-                            "fileId",
+                            FILE_ID,
                             photoDetails.fileId
                         )
                     }
@@ -238,13 +241,13 @@ class ShareImageViewModel @Inject constructor(
                 if (it != null) {
                     cloudDbRepository.addSubscriptionForFilesYouShared(
                         it,
-                        "senderId",
+                        SENDER_ID,
                         agConnectUser.currentUser.uid
                     )
 
                     cloudDbRepository.addSubscriptionForSharedFilesWithYou(
                         it,
-                        "receiverId",
+                        RECEIVER_ID,
                         agConnectUser.currentUser.uid
                     )
                 }
