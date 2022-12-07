@@ -181,7 +181,7 @@ class ShareImageFragment :
 
     private fun setUiState(shareImageUiState: ShareImageUiState) {
         shareImageUiState.error.firstOrNull()?.let {
-            showError(it)
+            showToast(it)
             viewModel.errorShown()
         }
         shareImageUiState.isSavedFilesWithPerson.firstOrNull()?.let {
@@ -196,9 +196,5 @@ class ShareImageFragment :
         val filterSharedFilesWithYouList =
             viewModel.filterSharedFilesWithYouList(shareImageUiState.sharedFilesWithYouList)
         sharedFilesWithYouAdapter.submitList(filterSharedFilesWithYouList)
-    }
-
-    private fun showError(errorMessage: String) {
-        showToast(errorMessage)
     }
 }
