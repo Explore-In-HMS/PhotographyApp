@@ -149,7 +149,6 @@ class ShareImageFragment :
             R1.layout.simple_list_item_1, sharedUserNameList
         )
 
-
         val alertDialogSharedPeople = alertDialogBuilder.create()
         alertDialogSharedPeople.show()
         alertDialogSharedPeople.window?.setLayout(

@@ -141,8 +141,8 @@ class ShareImageViewModel @Inject constructor(
         }
     }
 
-    fun deleteSharedFile(fileId: Int, sharedPersonCount: Int){
-        for (i in 0 until sharedPersonCount){
+    fun deleteSharedFile(fileId: Int, sharedPersonCount: Int) {
+        for (i in 0 until sharedPersonCount) {
             cloudDbRepository.deleteSharedFile(fileId + i)
         }
     }

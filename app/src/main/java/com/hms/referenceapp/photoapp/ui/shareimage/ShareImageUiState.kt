@@ -18,7 +18,6 @@ data class ShareImageUiState(
     val sharedFilesWithYouReceiverList: List<PhotoDetails>,
     val error: List<String>
 ) {
-
     companion object {
         fun initial() = ShareImageUiState(
             loading = false,

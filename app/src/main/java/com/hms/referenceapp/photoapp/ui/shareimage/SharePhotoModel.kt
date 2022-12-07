@@ -11,7 +11,6 @@ package com.hms.referenceapp.photoapp.ui.shareimage
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
-
 @Parcelize
 data class SharePhotoModel(
     val id: Int,
