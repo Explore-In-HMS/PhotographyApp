@@ -47,13 +47,13 @@ class ShareImageViewModel @Inject constructor(
 
     fun filterFilesYouSharedList(photoDetailList: List<PhotoDetails>): List<SharePhotoModel> {
         photoDetailList.forEach {
-            hashmapSharedPeople.put(it.fileId, arrayListOf())
+            hashmapSharedPeople[it.fileId] = arrayListOf()
         }
         photoDetailList.forEach {
             val sharedUser = User()
             sharedUser.id = it.receiverId.toLong()
             sharedUser.name = it.receiverName
-            hashmapSharedPeople.get(it.fileId)?.add(sharedUser)
+            hashmapSharedPeople[it.fileId]?.add(sharedUser)
         }
 
         val sortedPhotoDetailList = photoDetailList.sortedBy {
@@ -76,7 +76,7 @@ class ShareImageViewModel @Inject constructor(
         photoDetailList.forEach { photoDetails ->
             viewModelScope.launch {
                 cloudDbRepository.cloudDbZoneFlow.collect {
-                    if (it != null && hashmapFilesSharedWithYouPeople.get(photoDetails.fileId.toString()) == null) {
+                    if (it != null && hashmapFilesSharedWithYouPeople[photoDetails.fileId.toString()] == null) {
                         cloudDbRepository.addSubscriptionForSharedFilesWithYouReceivers(
                             it,
                             "fileId",
@@ -100,20 +100,20 @@ class ShareImageViewModel @Inject constructor(
 
     private fun setReceivedUsers(photoDetailList: List<PhotoDetails>) {
         photoDetailList.forEach {
-            hashmapFilesSharedWithYouPeople.put(it.fileId, arrayListOf())
+            hashmapFilesSharedWithYouPeople[it.fileId] = arrayListOf()
         }
         for (item in photoDetailList) {
             val sharedUser = User()
             sharedUser.id = item.senderId.toLong()
             sharedUser.name = item.senderName
-            hashmapFilesSharedWithYouPeople.get(item.fileId)?.add(sharedUser)
+            hashmapFilesSharedWithYouPeople[item.fileId]?.add(sharedUser)
             break
         }
         photoDetailList.forEach {
             val sharedUser = User()
             sharedUser.id = it.receiverId.toLong()
             sharedUser.name = it.receiverName
-            hashmapFilesSharedWithYouPeople.get(it.fileId)?.add(sharedUser)
+            hashmapFilesSharedWithYouPeople[it.fileId]?.add(sharedUser)
         }
     }
 
@@ -195,11 +195,11 @@ class ShareImageViewModel @Inject constructor(
     }
 
     fun getSharedPeopleFromFileId(fileId: String): ArrayList<User>? {
-        return hashmapSharedPeople.get(fileId)
+        return hashmapSharedPeople[fileId]
     }
 
     fun getSharedWithYouPeopleFromFileId(fileId: String): ArrayList<User>? {
-        return hashmapFilesSharedWithYouPeople.get(fileId)
+        return hashmapFilesSharedWithYouPeople[fileId]
     }
 
     fun errorShown() {
