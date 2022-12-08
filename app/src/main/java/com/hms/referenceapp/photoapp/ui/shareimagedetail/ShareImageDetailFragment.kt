@@ -46,6 +46,10 @@ class ShareImageDetailFragment :
 
     private lateinit var alertDialogSharedPeople: AlertDialog
 
+    companion object{
+        const val PATH_IMAGE = "image/*"
+    }
+
     override fun setupUi() {
         binding.recyclerviewSharedImages.apply {
             adapter = imagesAdapter
@@ -66,7 +70,7 @@ class ShareImageDetailFragment :
 
         with(binding) {
             selectImageBtn.setOnClickListener {
-                selectPhotosWithIntent.launch("image/*")
+                selectPhotosWithIntent.launch(PATH_IMAGE)
             }
             btnShareImage.setOnClickListener {
                 viewModel.sharePhotos()
