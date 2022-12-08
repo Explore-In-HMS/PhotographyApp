@@ -25,7 +25,6 @@ import com.hms.referenceapp.photoapp.util.ext.toBitmap
 import com.hms.referenceapp.photoapp.util.ext.toBytes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -166,7 +165,6 @@ class ShareImageDetailViewModel @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun sharePhotos() {
         if (isUserSelectPhoto()) {
             showError(ERROR_SELECT_PHOTO)

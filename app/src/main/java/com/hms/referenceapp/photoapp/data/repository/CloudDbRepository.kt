@@ -16,7 +16,6 @@ import com.hms.referenceapp.photoapp.util.Event
 import com.huawei.agconnect.cloud.database.*
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -109,7 +108,6 @@ class CloudDbRepository @Inject constructor(
         cloudDB.createObjectType(ObjectTypeInfoHelper.getObjectTypeInfo())
     }
 
-    @ExperimentalCoroutinesApi
     fun saveToCloudDB(cloudDBZoneObject: CloudDBZoneObject): Flow<Result<Boolean>> = callbackFlow {
         trySend(Result.Loading)
         if (isDpOpen().not()) {
