@@ -60,18 +60,6 @@ class ListUserFragment : DialogFragment() {
         setupUi()
         setupObservers()
         setupListeners()
-        binding.saveValuesButton.setOnClickListener {
-            val text = titleEditText.text
-            val description = descriptionEditText.text
-            val fileInformation = FileInformationModel(
-                title = text.toString(),
-                description = description.toString(),
-                userList = viewModel.getSelectedUsers(),
-                numberOfPeopleShared = viewModel.getSelectedUsers().count().toString()
-            )
-            viewModel.controlFileInformationModel(fileInformation)
-            setFragmentResult(REQUEST_KEY, bundleOf(BUNDLE_KEY to fileInformation))
-        }
     }
 
     private fun setupUi() {
@@ -86,6 +74,18 @@ class ListUserFragment : DialogFragment() {
     private fun setupListeners() {
         listUserAdapter.onUserSelectListener {
             viewModel.selectUser(it)
+        }
+        binding.saveValuesButton.setOnClickListener {
+            val text = titleEditText.text
+            val description = descriptionEditText.text
+            val fileInformation = FileInformationModel(
+                title = text.toString(),
+                description = description.toString(),
+                userList = viewModel.getSelectedUsers(),
+                numberOfPeopleShared = viewModel.getSelectedUsers().count().toString()
+            )
+            viewModel.controlFileInformationModel(fileInformation)
+            setFragmentResult(REQUEST_KEY, bundleOf(BUNDLE_KEY to fileInformation))
         }
     }
 
