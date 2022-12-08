@@ -12,7 +12,6 @@ import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.hms.referenceapp.photoapp.common.Result
@@ -170,7 +169,7 @@ class ShareImageDetailViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     fun sharePhotos() {
         if (isUserSelectPhoto()) {
-            showError("Please select photo for sharing..")
+            showError(ERROR_SELECT_PHOTO)
             return
         }
         viewModelScope.launch {
@@ -192,7 +191,7 @@ class ShareImageDetailViewModel @Inject constructor(
             }
 
             if (errorResultCount > 0) {
-                showError(message = "$errorResultCount image did not upload. Please try again.")
+                showError(message = errorResultCount.toString() + ERROR_DID_NOT_UPLOAD)
             } else {
                 showSuccess()
             }
@@ -251,13 +250,15 @@ class ShareImageDetailViewModel @Inject constructor(
                     baos
                 ) //Here, the compression options are used to store the compressed data in the BIOS
                 options -= 10 //10 less each time
-                Log.d("compressed ${bitmap.generationId}", getImageSize(baos).toString())
             }
-
-            Log.d("compressed-last", getImageSize(baos).toString())
             baos.toByteArray()
         }
 
 
     private fun getImageSize(baos: ByteArrayOutputStream) = baos.toByteArray().size / 1024
+
+    companion object{
+        const val ERROR_SELECT_PHOTO = "Please select photo for sharing.."
+        const val ERROR_DID_NOT_UPLOAD = " image did not upload. Please try again."
+    }
 }
