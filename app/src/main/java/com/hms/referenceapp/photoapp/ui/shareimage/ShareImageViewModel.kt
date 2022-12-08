@@ -69,7 +69,7 @@ class ShareImageViewModel @Inject constructor(
                 title = it.fileName,
                 description = it.fileDesc,
                 sharedPersonCount = it.numberOfPeopleShared,
-                true
+                isFileSharedByMe = true
             )
         }
     }
@@ -95,7 +95,7 @@ class ShareImageViewModel @Inject constructor(
                 title = it.fileName,
                 description = it.fileDesc,
                 sharedPersonCount = ((it.numberOfPeopleShared.toInt() + 1).toString()),
-                false
+                isFileSharedByMe = false
             )
         }
     }
@@ -158,7 +158,7 @@ class ShareImageViewModel @Inject constructor(
     private fun handleFileWithPersonSaveStatus(result: Result<Boolean>) {
         when (result) {
             is Result.Error -> setErrorState(result.exception)
-            Result.Loading -> setLoadingState()
+            is Result.Loading -> setLoadingState()
             is Result.Success -> setSavedFileWithPersonState()
         }
     }

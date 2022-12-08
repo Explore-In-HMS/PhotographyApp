@@ -74,7 +74,7 @@ class ShareImageFragment :
         filesYouSharedAdapter.setOnSharedPersonItemClickListener {
             showSharedPeopleDialog(
                 sharePhotoModel = it,
-                true
+                filesYouSharedStateValue = true
             )
         }
         filesYouSharedAdapter.setOnDeleteItemClickListener { showDeleteFileDialog(it) }
@@ -82,7 +82,7 @@ class ShareImageFragment :
         sharedFilesWithYouAdapter.setOnSharedPersonItemClickListener {
             showSharedPeopleDialog(
                 sharePhotoModel = it,
-                false
+                filesYouSharedStateValue = false
             )
         }
     }
