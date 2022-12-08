@@ -113,18 +113,16 @@ class CloudDbRepository @Inject constructor(
     fun saveToCloudDB(cloudDBZoneObject: CloudDBZoneObject): Flow<Result<Boolean>> = callbackFlow {
         trySend(Result.Loading)
         if (isDpOpen().not()) {
-            trySend(Result.Error(Exception("Something went wrong")))
+            trySend(Result.Error(Exception(EXP_STH_WENT_WRONG)))
             close()
             return@callbackFlow
         }
 
         val upsertTask = cloudDBZone!!.executeUpsert(cloudDBZoneObject)
-        upsertTask.addOnSuccessListener { cloudDBZoneResult ->
-            Log.i("Saved Data Successfully", "Upsert $cloudDBZoneResult records")
+        upsertTask.addOnSuccessListener {
             trySend(Result.Success(true))
         }.addOnFailureListener { exception ->
             trySend(Result.Error(exception))
-            Log.i("Couldn't Save Data: ", exception.localizedMessage.orEmpty())
         }.addOnCompleteListener {
             close()
         }
@@ -139,7 +137,6 @@ class CloudDbRepository @Inject constructor(
     private fun isDpOpen(): Boolean = cloudDBZone != null
 
     // Updating Listening in Real Time
-
     private val mSnapshotListenerForFilesYouShared =
         OnSnapshotListener<PhotoDetails> { cloudDBZoneSnapshot, e ->
             if (e != null) {
@@ -338,18 +335,17 @@ class CloudDbRepository @Inject constructor(
     fun getSharedPhotos(fileId: String) {
         _allSharedPhotosResponse.value = Event(Result.Loading)
         if (cloudDBZone == null) {
-            Log.w(TAG, "CloudDBZone is null, try re-open it")
-            _allSharedPhotosResponse.value = Event(Result.Error(Exception("Something went wrong")))
+            _allSharedPhotosResponse.value = Event(Result.Error(Exception(EXP_STH_WENT_WRONG)))
             return
         }
         cloudDBZone!!.executeCountQuery(
-            CloudDBZoneQuery.where(Photos::class.java).equalTo("fileId", fileId), "id",
+            CloudDBZoneQuery.where(Photos::class.java).equalTo(FILE_ID, fileId), ID,
             CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
         ).addOnSuccessListener { count ->
             val firstLimit = getLimit(count.toInt())
             getPhotosWithPagination(
                 fileId = fileId,
-                null,
+                lastPhotos = null,
                 limit = firstLimit,
                 onSuccessListener = {
                     val photos = getPhotosBySnapshot(it)
@@ -357,7 +353,8 @@ class CloudDbRepository @Inject constructor(
                     _allSharedPhotosResponse.value = Event(Result.Success(photos))
                     remind = (count - firstLimit).toInt()
                     getMorePhotos(fileId)
-                }, onErrorListener = {
+                },
+                onErrorListener = {
                     _allSharedPhotosResponse.value = Event(Result.Error(it))
                 })
         }.addOnFailureListener {
@@ -464,14 +461,11 @@ class CloudDbRepository @Inject constructor(
     fun deletePhotos(id: Int) {
         _deleteSharedPhotosResponse.value = Event(Result.Loading)
         if (cloudDBZone == null) {
-            Log.w(TAG, "CloudDBZone is null, try re-open it")
-            _deleteSharedPhotosResponse.value =
-                Event(Result.Error(Exception("Something went wrong")))
+            _deleteSharedPhotosResponse.value = Event(Result.Error(Exception(EXP_STH_WENT_WRONG)))
             return
         }
 
-        val query: CloudDBZoneQuery<Photos> =
-            CloudDBZoneQuery.where(Photos::class.java).equalTo("id", id)
+        val query: CloudDBZoneQuery<Photos> = CloudDBZoneQuery.where(Photos::class.java).equalTo(ID, id)
         val queryTask = cloudDBZone!!.executeQuery(
             query,
             CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
@@ -488,13 +482,12 @@ class CloudDbRepository @Inject constructor(
             }
             deleteTask.addOnFailureListener {
                 _deleteSharedPhotosResponse.value =
-                    Event(Result.Error(Exception("Something went wrong during deleting")))
+                    Event(Result.Error(Exception(EXP_STH_WENT_WRONG_DELETING)))
             }
+        }.addOnFailureListener {
+            _deleteSharedPhotosResponse.value =
+                Event(Result.Error(Exception(EXP_STH_WENT_WRONG)))
         }
-            .addOnFailureListener {
-                _deleteSharedPhotosResponse.value =
-                    Event(Result.Error(Exception("Something went wrong")))
-            }
     }
 
     private fun getLimit(count: Int) = (if (count >= 4) 4 else count)
@@ -502,8 +495,7 @@ class CloudDbRepository @Inject constructor(
     fun deleteUserFromSharedFile(_fileId: String, _receiverId: Long) {
         _deleteUserResponse.value = Event(Result.Loading)
         if (cloudDBZone == null) {
-            Log.w(TAG, "CloudDBZone is null, try re-open it")
-            _deleteUserResponse.value = Event(Result.Error(Exception("Something went wrong")))
+            _deleteUserResponse.value = Event(Result.Error(Exception(EXP_STH_WENT_WRONG)))
             return
         }
 
@@ -569,5 +561,8 @@ class CloudDbRepository @Inject constructor(
         private const val DB_NAME = "PhotoAppDB"
         private const val TAG = "CloudDB"
         private const val FILE_ID = "fileId"
+        private const val ID = "id"
+        private const val EXP_STH_WENT_WRONG = "Something went wrong"
+        private const val EXP_STH_WENT_WRONG_DELETING = "Something went wrong during deleting"
     }
 }
