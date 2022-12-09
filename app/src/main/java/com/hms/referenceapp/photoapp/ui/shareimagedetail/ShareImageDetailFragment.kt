@@ -118,7 +118,7 @@ class ShareImageDetailFragment :
             selectImageBtn.isEnabled = isLoading.not()
         }
         sharePhotoUiState.error?.let {
-            showError(it)
+            showToast(it)
             viewModel.errorShown()
         }
 
@@ -128,10 +128,6 @@ class ShareImageDetailFragment :
         }
 
         setPhotos(sharePhotoUiState.updatedPhotos)
-    }
-
-    private fun showError(errorMessage: String) {
-        showToast(errorMessage)
     }
 
     private var selectPhotosWithIntent =

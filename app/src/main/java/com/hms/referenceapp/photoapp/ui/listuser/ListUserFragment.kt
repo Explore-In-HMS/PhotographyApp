@@ -89,7 +89,7 @@ class ListUserFragment : DialogFragment() {
     private fun setUiState(listUserUiState: ListUserUiState) {
         with(listUserUiState){
             error?.let {
-                showError(it)
+                showToast(it)
                 viewModel.errorShown()
             }
             savedUserList.let {
@@ -109,9 +109,5 @@ class ListUserFragment : DialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun showError(errorMessage: String) {
-        showToast(errorMessage)
     }
 }
