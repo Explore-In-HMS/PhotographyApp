@@ -11,7 +11,10 @@ package com.hms.referenceapp.photoapp.data.repository
 import android.util.Log
 import com.hms.referenceapp.photoapp.R
 import com.hms.referenceapp.photoapp.common.Result
-import com.hms.referenceapp.photoapp.data.model.*
+import com.hms.referenceapp.photoapp.data.model.PhotoDetails
+import com.hms.referenceapp.photoapp.data.model.Photos
+import com.hms.referenceapp.photoapp.data.model.User
+import com.hms.referenceapp.photoapp.data.model.UserRelationship
 import com.hms.referenceapp.photoapp.data.remote.ObjectTypeInfoHelper
 import com.hms.referenceapp.photoapp.di.ResourceProvider
 import com.hms.referenceapp.photoapp.util.Event
