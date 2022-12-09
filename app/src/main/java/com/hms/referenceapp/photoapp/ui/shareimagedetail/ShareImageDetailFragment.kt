@@ -23,6 +23,7 @@ import com.hms.referenceapp.photoapp.data.model.Photos
 import com.hms.referenceapp.photoapp.databinding.FragmentShareImageDetailBinding
 import com.hms.referenceapp.photoapp.databinding.SharedPeopleDialogDeleteBinding
 import com.hms.referenceapp.photoapp.ui.base.BaseFragment
+import com.hms.referenceapp.photoapp.util.Constant.PATH_IMAGE
 import com.hms.referenceapp.photoapp.util.ext.collectLast
 import com.hms.referenceapp.photoapp.util.ext.getSpanCountByOrientation
 import com.hms.referenceapp.photoapp.util.ext.setVisibility
@@ -45,10 +46,6 @@ class ShareImageDetailFragment :
     lateinit var sharedUsersAdapter: SharedUsersAdapter
 
     private lateinit var alertDialogSharedPeople: AlertDialog
-
-    companion object{
-        const val PATH_IMAGE = "image/*"
-    }
 
     override fun setupUi() {
         binding.recyclerviewSharedImages.apply {

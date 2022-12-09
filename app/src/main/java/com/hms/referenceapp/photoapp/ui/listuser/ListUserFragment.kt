@@ -21,6 +21,8 @@ import com.hms.referenceapp.photoapp.R
 import com.hms.referenceapp.photoapp.adapter.ListUserAdapter
 import com.hms.referenceapp.photoapp.data.model.FileInformationModel
 import com.hms.referenceapp.photoapp.databinding.FragmentListUserBinding
+import com.hms.referenceapp.photoapp.util.Constant.BUNDLE_KEY
+import com.hms.referenceapp.photoapp.util.Constant.REQUEST_KEY
 import com.hms.referenceapp.photoapp.util.ext.collectLast
 import com.hms.referenceapp.photoapp.util.ext.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,11 +43,6 @@ class ListUserFragment : DialogFragment() {
 
     @Inject
     lateinit var listUserAdapter: ListUserAdapter
-
-    companion object{
-        const val REQUEST_KEY = "requestKey"
-        const val BUNDLE_KEY = "bundleKey"
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
