@@ -39,6 +39,9 @@
     <!-- List User -->
     <string name="add_file_information">Add File Information</string>
     <string name="save_values">Save Values</string>
+    <string name="error_description">Description can not be empty</string>
+    <string name="error_title">Title can not be empty</string>
+    <string name="error_user_list">You have to select at least one user</string>
 
     <!-- Login -->
     <string name="welcome_to_PhotographyApp">Welcome to PhotographyApp</string>
@@ -58,6 +61,8 @@
     <string name="select_photo">Select Photo</string>
     <string name="detail_icon">Detail Icon</string>
     <string name="photos_shared_successfully">Photos shared successfully</string>
+    <string name="error_select_photo">Please select photo for sharing..</string>
+    <string name="error_did_not_upload">image did not upload. Please try again.</string>
 
     <!-- Tag Detail -->
     <string name="tag_name">TAG NAME</string>
@@ -102,5 +107,10 @@
     <string name="delete_photos">Delete Photos</string>
     <string name="delete_photos_warning">In order to delete, you must select at least one photo!</string>
     <string name="delete_photos_successfully">Photo has been deleted successfully.</string>
+
+    <!-- CloudDbRepository -->
+    <string name="exp_sht_went_wrong">Something went wrong</string>
+    <string name="exp_sht_went_wrong_deleting">Something went wrong during deleting</string>
+
 
 </resources>
