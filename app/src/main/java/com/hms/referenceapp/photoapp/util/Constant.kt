@@ -49,4 +49,11 @@ object Constant {
         "Violet tone" to 24,
     )
 
+    //Share Image Detail
+    const val PATH_IMAGE = "image/*"
+
+    //List User
+    const val REQUEST_KEY = "requestKey"
+    const val BUNDLE_KEY = "bundleKey"
+
 }

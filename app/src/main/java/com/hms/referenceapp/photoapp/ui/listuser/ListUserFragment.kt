@@ -21,6 +21,8 @@ import com.hms.referenceapp.photoapp.R
 import com.hms.referenceapp.photoapp.adapter.ListUserAdapter
 import com.hms.referenceapp.photoapp.data.model.FileInformationModel
 import com.hms.referenceapp.photoapp.databinding.FragmentListUserBinding
+import com.hms.referenceapp.photoapp.util.Constant.BUNDLE_KEY
+import com.hms.referenceapp.photoapp.util.Constant.REQUEST_KEY
 import com.hms.referenceapp.photoapp.util.ext.collectLast
 import com.hms.referenceapp.photoapp.util.ext.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,7 +48,6 @@ class ListUserFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentListUserBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -56,18 +57,6 @@ class ListUserFragment : DialogFragment() {
         setupUi()
         setupObservers()
         setupListeners()
-        binding.saveValuesButton.setOnClickListener {
-            val text = titleEditText.text
-            val description = descriptionEditText.text
-            val fileInformation = FileInformationModel(
-                title = text.toString(),
-                description = description.toString(),
-                userList = viewModel.getSelectedUsers(),
-                numberOfPeopleShared = viewModel.getSelectedUsers().count().toString()
-            )
-            viewModel.controlFileInformationModel(fileInformation)
-            setFragmentResult("requestKey", bundleOf("bundleKey" to fileInformation))
-        }
     }
 
     private fun setupUi() {
@@ -83,24 +72,33 @@ class ListUserFragment : DialogFragment() {
         listUserAdapter.onUserSelectListener {
             viewModel.selectUser(it)
         }
+        binding.saveValuesButton.setOnClickListener {
+            val text = titleEditText.text
+            val description = descriptionEditText.text
+            val fileInformation = FileInformationModel(
+                title = text.toString(),
+                description = description.toString(),
+                userList = viewModel.getSelectedUsers(),
+                numberOfPeopleShared = viewModel.getSelectedUsers().count().toString()
+            )
+            viewModel.controlFileInformationModel(fileInformation)
+            setFragmentResult(REQUEST_KEY, bundleOf(BUNDLE_KEY to fileInformation))
+        }
     }
 
     private fun setUiState(listUserUiState: ListUserUiState) {
-
-        listUserUiState.error?.let {
-            showError(it)
-            viewModel.errorShown()
-        }
-
-        listUserUiState.savedUserList.let {
-            listUserAdapter.setUserList(it)
-        }
-
-        listUserUiState.loading.let {
-
-        }
-        if (listUserUiState.shareImageInformationFileTaken) {
-            findNavController().popBackStack()
+        with(listUserUiState){
+            error?.let {
+                showToast(it)
+                viewModel.errorShown()
+            }
+            savedUserList.let {
+                listUserAdapter.setUserList(it)
+            }
+            loading.let {}
+            if (shareImageInformationFileTaken) {
+                findNavController().popBackStack()
+            }
         }
     }
 
@@ -111,9 +109,5 @@ class ListUserFragment : DialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun showError(errorMessage: String) {
-        showToast(errorMessage)
     }
 }

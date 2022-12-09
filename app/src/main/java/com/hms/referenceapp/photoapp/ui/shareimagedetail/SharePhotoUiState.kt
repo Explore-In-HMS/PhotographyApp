@@ -24,7 +24,7 @@ data class SharePhotoUiState(
     val didIShare: Boolean,
     val loading: Boolean,
     val error: String?,
-    val isPhotosSharedSuccessuflly: Boolean
+    val isPhotosSharedSuccessfully: Boolean
 ) {
     companion object {
         fun initial() = SharePhotoUiState(
@@ -39,7 +39,7 @@ data class SharePhotoUiState(
             didIShare = true,
             loading = false,
             error = null,
-            isPhotosSharedSuccessuflly = false
+            isPhotosSharedSuccessfully = false
         )
     }
 }
