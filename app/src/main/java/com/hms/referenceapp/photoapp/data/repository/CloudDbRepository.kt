@@ -9,9 +9,11 @@
 package com.hms.referenceapp.photoapp.data.repository
 
 import android.util.Log
+import com.hms.referenceapp.photoapp.R
 import com.hms.referenceapp.photoapp.common.Result
 import com.hms.referenceapp.photoapp.data.model.*
 import com.hms.referenceapp.photoapp.data.remote.ObjectTypeInfoHelper
+import com.hms.referenceapp.photoapp.di.ResourceProvider
 import com.hms.referenceapp.photoapp.util.Event
 import com.huawei.agconnect.cloud.database.*
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
@@ -23,7 +25,8 @@ import javax.inject.Singleton
 
 @Singleton
 class CloudDbRepository @Inject constructor(
-    private val cloudDB: AGConnectCloudDB
+    private val cloudDB: AGConnectCloudDB,
+    private val resourceProvider: ResourceProvider
 ) {
 
     private var cloudDBZone: CloudDBZone? = null
@@ -111,7 +114,7 @@ class CloudDbRepository @Inject constructor(
     fun saveToCloudDB(cloudDBZoneObject: CloudDBZoneObject): Flow<Result<Boolean>> = callbackFlow {
         trySend(Result.Loading)
         if (isDpOpen().not()) {
-            trySend(Result.Error(Exception(EXP_STH_WENT_WRONG)))
+            trySend(Result.Error(Exception(resourceProvider.getString(R.string.exp_sht_went_wrong))))
             close()
             return@callbackFlow
         }
@@ -333,7 +336,7 @@ class CloudDbRepository @Inject constructor(
     fun getSharedPhotos(fileId: String) {
         _allSharedPhotosResponse.value = Event(Result.Loading)
         if (cloudDBZone == null) {
-            _allSharedPhotosResponse.value = Event(Result.Error(Exception(EXP_STH_WENT_WRONG)))
+            _allSharedPhotosResponse.value = Event(Result.Error(Exception(resourceProvider.getString(R.string.exp_sht_went_wrong))))
             return
         }
         cloudDBZone!!.executeCountQuery(
@@ -459,7 +462,7 @@ class CloudDbRepository @Inject constructor(
     fun deletePhotos(id: Int) {
         _deleteSharedPhotosResponse.value = Event(Result.Loading)
         if (cloudDBZone == null) {
-            _deleteSharedPhotosResponse.value = Event(Result.Error(Exception(EXP_STH_WENT_WRONG)))
+            _deleteSharedPhotosResponse.value = Event(Result.Error(Exception(resourceProvider.getString(R.string.exp_sht_went_wrong))))
             return
         }
 
@@ -480,11 +483,11 @@ class CloudDbRepository @Inject constructor(
             }
             deleteTask.addOnFailureListener {
                 _deleteSharedPhotosResponse.value =
-                    Event(Result.Error(Exception(EXP_STH_WENT_WRONG_DELETING)))
+                    Event(Result.Error(Exception(resourceProvider.getString(R.string.exp_sht_went_wrong_deleting))))
             }
         }.addOnFailureListener {
             _deleteSharedPhotosResponse.value =
-                Event(Result.Error(Exception(EXP_STH_WENT_WRONG)))
+                Event(Result.Error(Exception(resourceProvider.getString(R.string.exp_sht_went_wrong))))
         }
     }
 
@@ -493,7 +496,7 @@ class CloudDbRepository @Inject constructor(
     fun deleteUserFromSharedFile(_fileId: String, _receiverId: Long) {
         _deleteUserResponse.value = Event(Result.Loading)
         if (cloudDBZone == null) {
-            _deleteUserResponse.value = Event(Result.Error(Exception(EXP_STH_WENT_WRONG)))
+            _deleteUserResponse.value = Event(Result.Error(Exception(resourceProvider.getString(R.string.exp_sht_went_wrong))))
             return
         }
 
@@ -560,7 +563,5 @@ class CloudDbRepository @Inject constructor(
         private const val TAG = "CloudDB"
         private const val FILE_ID = "fileId"
         private const val ID = "id"
-        private const val EXP_STH_WENT_WRONG = "Something went wrong"
-        private const val EXP_STH_WENT_WRONG_DELETING = "Something went wrong during deleting"
     }
 }

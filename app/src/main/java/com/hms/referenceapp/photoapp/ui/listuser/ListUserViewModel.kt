@@ -9,11 +9,13 @@
 package com.hms.referenceapp.photoapp.ui.listuser
 
 import androidx.lifecycle.viewModelScope
+import com.hms.referenceapp.photoapp.R
 import com.hms.referenceapp.photoapp.data.model.FileInformationModel
 import com.hms.referenceapp.photoapp.data.model.UserSelectUiModel
 import com.hms.referenceapp.photoapp.data.model.User
 import com.hms.referenceapp.photoapp.data.model.UserRelationship
 import com.hms.referenceapp.photoapp.data.repository.CloudDbRepository
+import com.hms.referenceapp.photoapp.di.ResourceProvider
 import com.hms.referenceapp.photoapp.ui.base.BaseViewModel
 import com.huawei.agconnect.auth.AGConnectAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ListUserViewModel @Inject constructor(
     private val cloudDbRepository: CloudDbRepository,
-    agConnectUser: AGConnectAuth
+    agConnectUser: AGConnectAuth,
+    private val resourceProvider: ResourceProvider
 ) : BaseViewModel() {
 
     private val _listUserUiState = MutableStateFlow(ListUserUiState.initial())
@@ -103,7 +106,7 @@ class ListUserViewModel @Inject constructor(
         if (fileInformation.description.isEmpty()) {
             _listUserUiState.update { currentListUserUiState ->
                 currentListUserUiState.copy(
-                    error = ERROR_DESCRIPTION
+                    error = resourceProvider.getString(R.string.error_description)
                 )
             }
             return
@@ -111,7 +114,7 @@ class ListUserViewModel @Inject constructor(
         if (fileInformation.title.isEmpty()) {
             _listUserUiState.update { currentListUserUiState ->
                 currentListUserUiState.copy(
-                    error = ERROR_TITLE
+                    error = resourceProvider.getString(R.string.error_title)
                 )
             }
             return
@@ -119,7 +122,7 @@ class ListUserViewModel @Inject constructor(
         if (fileInformation.userList.isEmpty()) {
             _listUserUiState.update { currentListUserUiState ->
                 currentListUserUiState.copy(
-                    error = ERROR_USER_LIST
+                    error = resourceProvider.getString(R.string.error_user_list)
                 )
             }
             return
@@ -135,11 +138,5 @@ class ListUserViewModel @Inject constructor(
         _listUserUiState.update {
             it.copy(error = null)
         }
-    }
-
-    companion object{
-        const val ERROR_DESCRIPTION = "Description can not be empty"
-        const val ERROR_TITLE = "Title can not be empty"
-        const val ERROR_USER_LIST = "You have to select at least one user"
     }
 }

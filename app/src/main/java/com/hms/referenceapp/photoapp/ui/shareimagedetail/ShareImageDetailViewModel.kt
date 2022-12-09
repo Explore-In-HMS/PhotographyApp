@@ -14,11 +14,13 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.hms.referenceapp.photoapp.R
 import com.hms.referenceapp.photoapp.common.Result
 import com.hms.referenceapp.photoapp.data.model.ParcelableUser
 import com.hms.referenceapp.photoapp.data.model.PhotoDetails
 import com.hms.referenceapp.photoapp.data.model.Photos
 import com.hms.referenceapp.photoapp.data.repository.CloudDbRepository
+import com.hms.referenceapp.photoapp.di.ResourceProvider
 import com.hms.referenceapp.photoapp.ui.base.BaseViewModel
 import com.hms.referenceapp.photoapp.ui.shareimage.SharePhotoModel
 import com.hms.referenceapp.photoapp.util.ext.toBitmap
@@ -36,6 +38,7 @@ import javax.inject.Inject
 class ShareImageDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val cloudDbRepository: CloudDbRepository,
+    private val resourceProvider: ResourceProvider
 ) : BaseViewModel() {
 
     private val selectedPhotos = mutableListOf<Bitmap>()
@@ -167,7 +170,7 @@ class ShareImageDetailViewModel @Inject constructor(
 
     fun sharePhotos() {
         if (isUserSelectPhoto()) {
-            showError(ERROR_SELECT_PHOTO)
+            showError(resourceProvider.getString(R.string.error_select_photo))
             return
         }
         viewModelScope.launch {
@@ -189,7 +192,7 @@ class ShareImageDetailViewModel @Inject constructor(
             }
 
             if (errorResultCount > 0) {
-                showError(message = errorResultCount.toString() + ERROR_DID_NOT_UPLOAD)
+                showError(message = errorResultCount.toString() + resourceProvider.getString(R.string.error_did_not_upload))
             } else {
                 showSuccess()
             }
@@ -254,9 +257,4 @@ class ShareImageDetailViewModel @Inject constructor(
 
 
     private fun getImageSize(baos: ByteArrayOutputStream) = baos.toByteArray().size / 1024
-
-    companion object{
-        const val ERROR_SELECT_PHOTO = "Please select photo for sharing.."
-        const val ERROR_DID_NOT_UPLOAD = " image did not upload. Please try again."
-    }
 }
