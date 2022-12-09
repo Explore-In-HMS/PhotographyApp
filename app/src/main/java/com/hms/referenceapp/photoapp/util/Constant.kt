@@ -55,4 +55,7 @@ object Constant {
     const val RECEIVER_ID = "receiverId"
     const val REQUEST_KEY = "requestKey"
     const val BUNDLE_KEY = "bundleKey"
+
+    //Share Image Detail
+    const val PATH_IMAGE = "image/*"
 }
