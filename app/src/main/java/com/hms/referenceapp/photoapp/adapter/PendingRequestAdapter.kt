@@ -41,14 +41,10 @@ class PendingRequestAdapter @Inject constructor() :
             with(binding) {
                 btnAccept.setOnClickListener {
                     pendingRequest.isAccepted = true
-                    //pendingRequestList.removeAt(absoluteAdapterPosition)
-                    //notifyItemRemoved(absoluteAdapterPosition)
                     onRequestUpdateListener?.invoke(pendingRequest)
                 }
                 btnDecline.setOnClickListener {
                     pendingRequest.isDeclined = true
-                    //pendingRequestList.removeAt(absoluteAdapterPosition)
-                    //notifyItemRemoved(absoluteAdapterPosition)
                     onRequestUpdateListener?.invoke(pendingRequest)
                 }
                 userName.text = pendingRequest.name
