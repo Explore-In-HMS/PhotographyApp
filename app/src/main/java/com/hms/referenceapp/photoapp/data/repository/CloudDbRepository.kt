@@ -292,7 +292,7 @@ class CloudDbRepository @Inject constructor(
 
     fun getUsers() {
         if (cloudDBZone == null) {
-            Log.w(TAG, "CloudDBZone is null, try re-open it")
+            Log.w(TAG, resourceProvider.getString(R.string.exp_null_cloud_db_zone))
             return
         }
         val queryTask = cloudDBZone!!.executeQuery(

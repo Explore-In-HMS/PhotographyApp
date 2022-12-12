@@ -3,6 +3,7 @@ package com.hms.referenceapp.photoapp.ui.addfriends
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.hms.referenceapp.photoapp.R
 import com.hms.referenceapp.photoapp.adapter.ListUserAdapter
 import com.hms.referenceapp.photoapp.adapter.PendingRequestAdapter
 import com.hms.referenceapp.photoapp.databinding.FragmentAddFriendsBinding
@@ -67,7 +68,7 @@ class AddFriendsFragment :
                         args.userName.toString(),
                         secondUserName
                     )
-                    showToast("Friend request sent!!")
+                    showToast(getString(R.string.request_sent))
                 }
                 it.isChecked = false
             }
