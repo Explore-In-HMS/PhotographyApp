@@ -23,48 +23,26 @@ class AddFriendsFragment :
 
     @Inject
     lateinit var listUserAdapter: ListUserAdapter
+
     @Inject
     lateinit var pendingRequestAdapter: PendingRequestAdapter
 
     override fun setupUi() {
-
-        viewModel.userId = args.userId.toString()
-        viewModel.userName = args.userName.toString()
-
-        viewModel.getUsers()
-        args.userId?.let { viewModel.getPendingRequests(currentUserId = it) }
-
+        setupUserAndRequestLists()
         setAdapters()
-
-        binding.edtSearchUser.addTextChangedListener {
-            if (binding.edtSearchUser.text != null || binding.edtSearchUser.text.isNotEmpty()) {
-                listUserAdapter.setUserList(viewModel.getFilteredList(binding.edtSearchUser.text.toString()))
-            }
-        }
-
-        binding.btnAddFriend.setOnClickListener {
-            val userList = viewModel.getFilteredList("")
-
-            userList.forEach {
-                if (it.isChecked) {
-                    val secondUserId = it.user.id.toString()
-                    val secondUserName = it.user.name
-                    viewModel.sendFriendRequest( args.userId.toString(), secondUserId, args.userName.toString(), secondUserName)
-                    showToast("Friend request sent!!")
-                }
-                it.isChecked = false
-            }
-
-
-            listUserAdapter.setUserList(userList)
-        }
-
     }
 
     private fun setAdapters() {
         binding.recyclerviewUsers.adapter = listUserAdapter
         binding.recyclerviewPendingRequest.adapter = pendingRequestAdapter
         pendingRequestAdapter.setRequestList(viewModel.addFriendsUiState.value.pendingRequestList)
+    }
+
+    private fun setupUserAndRequestLists() {
+        viewModel.userId = args.userId.toString()
+        viewModel.userName = args.userName.toString()
+        viewModel.getUsers()
+        args.userId?.let { viewModel.getPendingRequests(currentUserId = it) }
     }
 
     override fun setupObservers() {
@@ -76,14 +54,34 @@ class AddFriendsFragment :
             viewModel.updatePendingRequest(pendingRequest = it)
             pendingRequestAdapter.setRequestList(viewModel.addFriendsUiState.value.pendingRequestList)
         }
+
+        binding.btnAddFriend.setOnClickListener {
+            val userList = viewModel.getFilteredList("")
+            userList.forEach {
+                if (it.isChecked) {
+                    val secondUserId = it.user.id.toString()
+                    val secondUserName = it.user.name
+                    viewModel.sendFriendRequest(
+                        args.userId.toString(),
+                        secondUserId,
+                        args.userName.toString(),
+                        secondUserName
+                    )
+                    showToast("Friend request sent!!")
+                }
+                it.isChecked = false
+            }
+            listUserAdapter.setUserList(userList)
+        }
+
+        binding.edtSearchUser.addTextChangedListener {
+            if (binding.edtSearchUser.text != null || binding.edtSearchUser.text.isNotEmpty()) {
+                listUserAdapter.setUserList(viewModel.getFilteredList(binding.edtSearchUser.text.toString()))
+            }
+        }
     }
 
     private fun setUiState(addFriendsUiState: AddFriendsUiState) {
-
-        addFriendsUiState.error.let {
-
-        }
-
         addFriendsUiState.savedUserList.let {
             listUserAdapter.setUserList(it)
         }
@@ -92,10 +90,6 @@ class AddFriendsFragment :
 
         addFriendsUiState.pendingRequestList.let {
             pendingRequestAdapter.setRequestList(it)
-        }
-
-        addFriendsUiState.loading.let {
-
         }
     }
 }
