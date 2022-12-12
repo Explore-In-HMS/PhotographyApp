@@ -42,24 +42,26 @@ class ImagesAdapter @Inject constructor() :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(photos: Photos) {
-            binding.image.load(photos.byteArrayOfPhoto.toBitmap())
+            with(binding) {
+                image.load(photos.byteArrayOfPhoto.toBitmap())
 
-            binding.image.setOnClickListener {
-                onItemClickListener?.invoke(photos.byteArrayOfPhoto.toBitmap())
-            }
-
-            binding.image.setOnLongClickListener {
-                clicked = !clicked
-                if (clicked) {
-                    binding.cardViewImage.strokeColor =
-                        ContextCompat.getColor(binding.root.context, R.color.huaweiRed)
-                    onCardClickListener?.invoke(photos, clicked)
-                } else {
-                    binding.cardViewImage.strokeColor =
-                        ContextCompat.getColor(binding.root.context, R.color.dirtyWhite)
-                    onCardClickListener?.invoke(photos, clicked)
+                image.setOnClickListener {
+                    onItemClickListener?.invoke(photos.byteArrayOfPhoto.toBitmap())
                 }
-                return@setOnLongClickListener true
+
+                image.setOnLongClickListener {
+                    clicked = !clicked
+                    if (clicked) {
+                        cardViewImage.strokeColor =
+                            ContextCompat.getColor(root.context, R.color.huaweiRed)
+                        onCardClickListener?.invoke(photos, clicked)
+                    } else {
+                        cardViewImage.strokeColor =
+                            ContextCompat.getColor(root.context, R.color.dirtyWhite)
+                        onCardClickListener?.invoke(photos, clicked)
+                    }
+                    return@setOnLongClickListener true
+                }
             }
         }
     }
@@ -79,7 +81,7 @@ class ImagesAdapter @Inject constructor() :
         }
 
         override fun areContentsTheSame(oldItem: Photos, newItem: Photos): Boolean {
-            return newItem.equals(oldItem)
+            return newItem.id == oldItem.id
         }
     }
 }

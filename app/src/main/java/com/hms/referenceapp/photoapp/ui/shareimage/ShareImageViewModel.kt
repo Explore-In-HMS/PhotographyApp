@@ -15,9 +15,11 @@ import com.hms.referenceapp.photoapp.data.model.PhotoDetails
 import com.hms.referenceapp.photoapp.data.model.User
 import com.hms.referenceapp.photoapp.data.repository.CloudDbRepository
 import com.hms.referenceapp.photoapp.ui.base.BaseViewModel
+import com.hms.referenceapp.photoapp.util.Constant.FILE_ID
+import com.hms.referenceapp.photoapp.util.Constant.RECEIVER_ID
+import com.hms.referenceapp.photoapp.util.Constant.SENDER_ID
 import com.huawei.agconnect.auth.AGConnectAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -47,13 +49,13 @@ class ShareImageViewModel @Inject constructor(
 
     fun filterFilesYouSharedList(photoDetailList: List<PhotoDetails>): List<SharePhotoModel> {
         photoDetailList.forEach {
-            hashmapSharedPeople.put(it.fileId, arrayListOf())
+            hashmapSharedPeople[it.fileId] = arrayListOf()
         }
         photoDetailList.forEach {
             val sharedUser = User()
             sharedUser.id = it.receiverId.toLong()
             sharedUser.name = it.receiverName
-            hashmapSharedPeople.get(it.fileId)?.add(sharedUser)
+            hashmapSharedPeople[it.fileId]?.add(sharedUser)
         }
 
         val sortedPhotoDetailList = photoDetailList.sortedBy {
@@ -67,7 +69,7 @@ class ShareImageViewModel @Inject constructor(
                 title = it.fileName,
                 description = it.fileDesc,
                 sharedPersonCount = it.numberOfPeopleShared,
-                true
+                isFileSharedByMe = true
             )
         }
     }
@@ -76,10 +78,10 @@ class ShareImageViewModel @Inject constructor(
         photoDetailList.forEach { photoDetails ->
             viewModelScope.launch {
                 cloudDbRepository.cloudDbZoneFlow.collect {
-                    if (it != null && hashmapFilesSharedWithYouPeople.get(photoDetails.fileId.toString()) == null) {
+                    if (it != null && hashmapFilesSharedWithYouPeople[photoDetails.fileId.toString()] == null) {
                         cloudDbRepository.addSubscriptionForSharedFilesWithYouReceivers(
                             it,
-                            "fileId",
+                            FILE_ID,
                             photoDetails.fileId
                         )
                     }
@@ -93,33 +95,31 @@ class ShareImageViewModel @Inject constructor(
                 title = it.fileName,
                 description = it.fileDesc,
                 sharedPersonCount = ((it.numberOfPeopleShared.toInt() + 1).toString()),
-                false
+                isFileSharedByMe = false
             )
         }
     }
 
     private fun setReceivedUsers(photoDetailList: List<PhotoDetails>) {
         photoDetailList.forEach {
-            hashmapFilesSharedWithYouPeople.put(it.fileId, arrayListOf())
+            hashmapFilesSharedWithYouPeople[it.fileId] = arrayListOf()
         }
         for (item in photoDetailList) {
             val sharedUser = User()
             sharedUser.id = item.senderId.toLong()
             sharedUser.name = item.senderName
-            hashmapFilesSharedWithYouPeople.get(item.fileId)?.add(sharedUser)
+            hashmapFilesSharedWithYouPeople[item.fileId]?.add(sharedUser)
             break
         }
         photoDetailList.forEach {
             val sharedUser = User()
             sharedUser.id = it.receiverId.toLong()
             sharedUser.name = it.receiverName
-            hashmapFilesSharedWithYouPeople.get(it.fileId)?.add(sharedUser)
+            hashmapFilesSharedWithYouPeople[it.fileId]?.add(sharedUser)
         }
     }
 
-    @ExperimentalCoroutinesApi
     fun prepareFileData(fileInformationModel: FileInformationModel?) {
-
         var milliSecond = System.currentTimeMillis().toInt()
         val fileIdWithMillisecond = "fileId_${milliSecond}"
 
@@ -141,13 +141,12 @@ class ShareImageViewModel @Inject constructor(
         }
     }
 
-    fun deleteSharedFile(fileId: Int, sharedPersonCount: Int){
-        for (i in 0 until sharedPersonCount){
+    fun deleteSharedFile(fileId: Int, sharedPersonCount: Int) {
+        for (i in 0 until sharedPersonCount) {
             cloudDbRepository.deleteSharedFile(fileId + i)
         }
     }
 
-    @ExperimentalCoroutinesApi
     private fun saveFileWithPersonToCloud(fileWithPersonList: PhotoDetails) {
         viewModelScope.launch {
             cloudDbRepository.saveToCloudDB(fileWithPersonList).collect {
@@ -159,7 +158,7 @@ class ShareImageViewModel @Inject constructor(
     private fun handleFileWithPersonSaveStatus(result: Result<Boolean>) {
         when (result) {
             is Result.Error -> setErrorState(result.exception)
-            Result.Loading -> setLoadingState()
+            is Result.Loading -> setLoadingState()
             is Result.Success -> setSavedFileWithPersonState()
         }
     }
@@ -195,11 +194,11 @@ class ShareImageViewModel @Inject constructor(
     }
 
     fun getSharedPeopleFromFileId(fileId: String): ArrayList<User>? {
-        return hashmapSharedPeople.get(fileId)
+        return hashmapSharedPeople[fileId]
     }
 
     fun getSharedWithYouPeopleFromFileId(fileId: String): ArrayList<User>? {
-        return hashmapFilesSharedWithYouPeople.get(fileId)
+        return hashmapFilesSharedWithYouPeople[fileId]
     }
 
     fun errorShown() {
@@ -238,13 +237,13 @@ class ShareImageViewModel @Inject constructor(
                 if (it != null) {
                     cloudDbRepository.addSubscriptionForFilesYouShared(
                         it,
-                        "senderId",
+                        SENDER_ID,
                         agConnectUser.currentUser.uid
                     )
 
                     cloudDbRepository.addSubscriptionForSharedFilesWithYou(
                         it,
-                        "receiverId",
+                        RECEIVER_ID,
                         agConnectUser.currentUser.uid
                     )
                 }

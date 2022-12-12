@@ -9,7 +9,6 @@
 package com.hms.referenceapp.photoapp.ui.shareimagedetail
 
 import android.app.AlertDialog
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,6 +23,7 @@ import com.hms.referenceapp.photoapp.data.model.Photos
 import com.hms.referenceapp.photoapp.databinding.FragmentShareImageDetailBinding
 import com.hms.referenceapp.photoapp.databinding.SharedPeopleDialogDeleteBinding
 import com.hms.referenceapp.photoapp.ui.base.BaseFragment
+import com.hms.referenceapp.photoapp.util.Constant.PATH_IMAGE
 import com.hms.referenceapp.photoapp.util.ext.collectLast
 import com.hms.referenceapp.photoapp.util.ext.getSpanCountByOrientation
 import com.hms.referenceapp.photoapp.util.ext.setVisibility
@@ -45,30 +45,16 @@ class ShareImageDetailFragment :
     @Inject
     lateinit var sharedUsersAdapter: SharedUsersAdapter
 
+    private lateinit var alertDialogSharedPeople: AlertDialog
+
     override fun setupUi() {
-        binding.recyclerviewSharedImages.adapter = imagesAdapter
-        binding.recyclerviewSharedImages.layoutManager =
-            GridLayoutManager(requireContext(), getSpanCountByOrientation())
+        binding.recyclerviewSharedImages.apply {
+            adapter = imagesAdapter
+            layoutManager = GridLayoutManager(requireContext(), getSpanCountByOrientation())
+        }
     }
 
     override fun setupListeners() {
-        with(binding) {
-            selectImageBtn.setOnClickListener {
-                selectPhotosWithIntent.launch("image/*")
-            }
-            btnShareImage.setOnClickListener {
-                viewModel.sharePhotos()
-            }
-        }
-
-        imagesAdapter.setOnItemClickListener {
-            val action =
-                ShareImageDetailFragmentDirections.actionShareImageDetailFragmentToOpenImageFragment(
-                    null,
-                    it
-                )
-            findNavController().navigate(action)
-        }
 
         val deletedPhotos: MutableList<Photos> = ArrayList()
         imagesAdapter.setOnCardClickListener { image, clicked ->
@@ -79,8 +65,25 @@ class ShareImageDetailFragment :
             }
         }
 
-        binding.deleteImageButton.setOnClickListener {
-            deleteSharedPhotos(deletedPhotos)
+        with(binding) {
+            selectImageBtn.setOnClickListener {
+                selectPhotosWithIntent.launch(PATH_IMAGE)
+            }
+            btnShareImage.setOnClickListener {
+                viewModel.sharePhotos()
+            }
+            deleteImageButton.setOnClickListener {
+                deleteSharedPhotos(deletedPhotos)
+            }
+        }
+
+        imagesAdapter.setOnItemClickListener {
+            val action =
+                ShareImageDetailFragmentDirections.actionShareImageDetailFragmentToOpenImageFragment(
+                    null,
+                    it
+                )
+            findNavController().navigate(action)
         }
     }
 
@@ -115,20 +118,16 @@ class ShareImageDetailFragment :
             selectImageBtn.isEnabled = isLoading.not()
         }
         sharePhotoUiState.error?.let {
-            showError(it)
+            showToast(it)
             viewModel.errorShown()
         }
 
-        if (sharePhotoUiState.isPhotosSharedSuccessuflly) {
-            showToast("Photos shared successfully")
+        if (sharePhotoUiState.isPhotosSharedSuccessfully) {
+            showToast(getString(R.string.photos_shared_successfully))
             findNavController().popBackStack()
         }
 
         setPhotos(sharePhotoUiState.updatedPhotos)
-    }
-
-    private fun showError(errorMessage: String) {
-        showToast(errorMessage)
     }
 
     private var selectPhotosWithIntent =
@@ -139,8 +138,6 @@ class ShareImageDetailFragment :
     private fun deleteSharedUser(user: ParcelableUser) {
         viewModel.deleteUserFromSharedFile(viewModel.sharePhotoUiState.value.fileId, user.id)
     }
-
-    private lateinit var alertDialogSharedPeople: AlertDialog
 
     private fun setDialogAdapter(sharedUserList: List<ParcelableUser>, didIShare: Boolean){
         with(sharedUsersAdapter) {

@@ -14,7 +14,7 @@ import java.util.Date;
 /**
  * Definition of ObjectType UserRelationship.
  *
- * @since 2022-10-04
+ * @since 2022-12-08
  */
 @PrimaryKeys({"firstSecondUID"})
 public final class UserRelationship extends CloudDBZoneObject {
@@ -32,6 +32,10 @@ public final class UserRelationship extends CloudDBZoneObject {
     private Boolean areFriends;
 
     private String firstSecondUID;
+
+    private String firstUserName;
+
+    private String secondUserName;
 
     public UserRelationship() {
         super(UserRelationship.class);
@@ -86,6 +90,22 @@ public final class UserRelationship extends CloudDBZoneObject {
 
     public String getFirstSecondUID() {
         return firstSecondUID;
+    }
+
+    public void setFirstUserName(String firstUserName) {
+        this.firstUserName = firstUserName;
+    }
+
+    public String getFirstUserName() {
+        return firstUserName;
+    }
+
+    public void setSecondUserName(String secondUserName) {
+        this.secondUserName = secondUserName;
+    }
+
+    public String getSecondUserName() {
+        return secondUserName;
     }
 
 }
