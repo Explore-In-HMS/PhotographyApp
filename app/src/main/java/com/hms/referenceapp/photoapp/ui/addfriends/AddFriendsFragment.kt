@@ -19,32 +19,22 @@ class AddFriendsFragment :
     BaseFragment<AddFriendsViewModel, FragmentAddFriendsBinding>(FragmentAddFriendsBinding::inflate) {
 
     override val viewModel: AddFriendsViewModel by viewModels()
-
     private val args: AddFriendsFragmentArgs by navArgs()
-
-    private var userId = ""
-    private var userName = ""
 
     @Inject
     lateinit var listUserAdapter: ListUserAdapter
-
     @Inject
     lateinit var pendingRequestAdapter: PendingRequestAdapter
 
     override fun setupUi() {
-        viewModel.addFriendsUiState.value.let {
 
-        }
+        viewModel.userId = args.userId.toString()
+        viewModel.userName = args.userName.toString()
 
-        userId = args.userId.toString()
-        viewModel.userId = userId
-
-        userName = args.userName.toString()
-        viewModel.userName = userName
-
-        setAdapters()
         viewModel.getUsers()
         args.userId?.let { viewModel.getPendingRequests(currentUserId = it) }
+
+        setAdapters()
 
         binding.edtSearchUser.addTextChangedListener {
             if (binding.edtSearchUser.text != null || binding.edtSearchUser.text.isNotEmpty()) {
@@ -59,7 +49,7 @@ class AddFriendsFragment :
                 if (it.isChecked) {
                     val secondUserId = it.user.id.toString()
                     val secondUserName = it.user.name
-                    viewModel.sendFriendRequest(userId, secondUserId, userName, secondUserName)
+                    viewModel.sendFriendRequest( args.userId.toString(), secondUserId, args.userName.toString(), secondUserName)
                     showToast("Friend request sent!!")
                 }
                 it.isChecked = false

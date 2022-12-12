@@ -26,8 +26,6 @@ class AddFriendsViewModel @Inject constructor(
     lateinit var userId: String
     lateinit var userName: String
 
-
-
     fun getUsers() {
         cloudDbRepository.getUsers()
         viewModelScope.launch {
