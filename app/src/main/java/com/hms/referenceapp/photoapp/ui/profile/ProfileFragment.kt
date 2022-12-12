@@ -20,10 +20,12 @@ class ProfileFragment :
     @Inject
     lateinit var authService: HuaweiIdAuthService
     private var userId = ""
+    private var userName = ""
 
     override fun setupUi() {
         viewModel.profileUiState.value.let {
             userId = it.userProfile.id.toString()
+            userName = it.userProfile.name.toString()
             binding.textViewUserName.text = it.userProfile.name
             if (it.userProfile.profileImage != null) {
                 binding.imageViewUser.load(it.userProfile.profileImage)
@@ -39,7 +41,10 @@ class ProfileFragment :
         }
 
         binding.btnAddFriends.setOnClickListener {
-            val action = ProfileFragmentDirections.actionProfileFragmentToAddFriendsFragment(userId)
+            val action = ProfileFragmentDirections.actionProfileFragmentToAddFriendsFragment(
+                userId,
+                userName
+            )
             findNavController().navigate(action)
         }
     }

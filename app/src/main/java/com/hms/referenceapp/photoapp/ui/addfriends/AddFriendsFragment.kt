@@ -23,11 +23,13 @@ class AddFriendsFragment :
     private val args: AddFriendsFragmentArgs by navArgs()
 
     private var userId = ""
+    private var userName = ""
 
     @Inject
     lateinit var listUserAdapter: ListUserAdapter
+
     @Inject
-    lateinit var pendingRequestAdapter : PendingRequestAdapter
+    lateinit var pendingRequestAdapter: PendingRequestAdapter
 
     override fun setupUi() {
         viewModel.addFriendsUiState.value.let {
@@ -37,12 +39,15 @@ class AddFriendsFragment :
         userId = args.userId.toString()
         viewModel.userId = userId
 
+        userName = args.userName.toString()
+        viewModel.userName = userName
+
         setAdapters()
         viewModel.getUsers()
         args.userId?.let { viewModel.getPendingRequests(currentUserId = it) }
 
         binding.edtSearchUser.addTextChangedListener {
-            if (binding.edtSearchUser.text!=null || binding.edtSearchUser.text.isNotEmpty()){
+            if (binding.edtSearchUser.text != null || binding.edtSearchUser.text.isNotEmpty()) {
                 listUserAdapter.setUserList(viewModel.getFilteredList(binding.edtSearchUser.text.toString()))
             }
         }
@@ -51,9 +56,10 @@ class AddFriendsFragment :
             val userList = viewModel.getFilteredList("")
 
             userList.forEach {
-                if (it.isChecked){
-                    val userId2 = it.user.id.toString()
-                    viewModel.sendFriendRequest(userId,userId2)
+                if (it.isChecked) {
+                    val secondUserId = it.user.id.toString()
+                    val secondUserName = it.user.name
+                    viewModel.sendFriendRequest(userId, secondUserId, userName, secondUserName)
                     showToast("Friend request sent!!")
                 }
                 it.isChecked = false
@@ -65,7 +71,7 @@ class AddFriendsFragment :
 
     }
 
-    private fun setAdapters(){
+    private fun setAdapters() {
         binding.recyclerviewUsers.adapter = listUserAdapter
         binding.recyclerviewPendingRequest.adapter = pendingRequestAdapter
         pendingRequestAdapter.setRequestList(viewModel.addFriendsUiState.value.pendingRequestList)

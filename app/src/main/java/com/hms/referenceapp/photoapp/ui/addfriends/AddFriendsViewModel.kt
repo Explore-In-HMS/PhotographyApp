@@ -24,6 +24,9 @@ class AddFriendsViewModel @Inject constructor(
     val addFriendsUiState: StateFlow<AddFriendsUiState> get() = _addFriendsUiState.asStateFlow()
 
     lateinit var userId: String
+    lateinit var userName: String
+
+
 
     fun getUsers() {
         cloudDbRepository.getUsers()
@@ -56,8 +59,8 @@ class AddFriendsViewModel @Inject constructor(
             it.isAccepted = pendingRequest.isAccepted
             it.isDeclined = pendingRequest.isDeclined
             when {
-                it.isAccepted == true -> sendFriendRequestResponse(it.id.toString(), userId, true)
-                it.isDeclined == true -> sendFriendRequestResponse(it.id.toString(), userId, false)
+                it.isAccepted == true -> sendFriendRequestResponse(it.id.toString(), userId, true, pendingRequest.name, userName)
+                it.isDeclined == true -> sendFriendRequestResponse(it.id.toString(), userId, false, pendingRequest.name, userName)
             }
             currentRequestList.remove(it)
         }
@@ -71,11 +74,15 @@ class AddFriendsViewModel @Inject constructor(
     @ExperimentalCoroutinesApi
     fun sendFriendRequest(
         firstUId: String,
-        secondUId: String
+        secondUId: String,
+        firstUserName: String,
+        secondUserName: String
     ) {
         val userRelationship = UserRelationship().apply {
             firstUserId = firstUId
             secondUserId = secondUId
+            this.firstUserName = firstUserName
+            this.secondUserName = secondUserName
             firstSecondUID = firstUId + secondUId
             pendingFirstSecond = true
             areFriends = false
@@ -92,7 +99,9 @@ class AddFriendsViewModel @Inject constructor(
     fun sendFriendRequestResponse(
         firstUId: String,
         secondUId: String,
-        addAsFriend: Boolean
+        addAsFriend: Boolean,
+        firstUserName: String,
+        secondUserName: String
     ) {
         val userRelationship = UserRelationship().apply {
             firstUserId = firstUId
@@ -100,6 +109,8 @@ class AddFriendsViewModel @Inject constructor(
             firstSecondUID = firstUId + secondUId
             pendingFirstSecond = false
             areFriends = addAsFriend
+            this.firstUserName = firstUserName
+            this.secondUserName = secondUserName
         }
 
         viewModelScope.launch {
@@ -134,7 +145,7 @@ class AddFriendsViewModel @Inject constructor(
         userList?.forEach { user ->
             userRelationList?.forEach { userRelation ->
                 if (userId == userRelation.firstUserId && user.id.toString() == userRelation.secondUserId && userRelation.areFriends == true) {
-                    friendList.add(user) //for future usage
+                    friendList.add(user)
                     if (mutableUserList?.contains(user) == true) {
                         mutableUserList.remove(user)
                     }
