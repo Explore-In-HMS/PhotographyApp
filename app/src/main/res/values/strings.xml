@@ -106,6 +106,7 @@
     <string name="decline_request">×</string>
     <string name="apply_dialog">OK</string>
     <string name="shared_people">Shared People</string>
+    <string name="request_sent">Friend request sent!!</string>
 
     <!-- DeletePhoto -->
     <string name="delete_photos">Delete Photos</string>
@@ -115,6 +116,6 @@
     <!-- CloudDbRepository -->
     <string name="exp_sht_went_wrong">Something went wrong</string>
     <string name="exp_sht_went_wrong_deleting">Something went wrong during deleting</string>
-
+    <string name="exp_null_cloud_db_zone">CloudDBZone is null, try re-open it</string>
 
 </resources>

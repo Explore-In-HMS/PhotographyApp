@@ -192,6 +192,10 @@
             android:name="userId"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="userName"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/addFriendsFragment"
@@ -200,6 +204,10 @@
         tools:layout="@layout/fragment_add_friends">
         <argument
             android:name="userId"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="userName"
             app:argType="string"
             app:nullable="true" />
     </fragment>

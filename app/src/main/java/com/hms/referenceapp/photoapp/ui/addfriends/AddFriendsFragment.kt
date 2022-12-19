@@ -3,6 +3,7 @@ package com.hms.referenceapp.photoapp.ui.addfriends
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.hms.referenceapp.photoapp.R
 import com.hms.referenceapp.photoapp.adapter.ListUserAdapter
 import com.hms.referenceapp.photoapp.adapter.PendingRequestAdapter
 import com.hms.referenceapp.photoapp.databinding.FragmentAddFriendsBinding
@@ -19,56 +20,30 @@ class AddFriendsFragment :
     BaseFragment<AddFriendsViewModel, FragmentAddFriendsBinding>(FragmentAddFriendsBinding::inflate) {
 
     override val viewModel: AddFriendsViewModel by viewModels()
-
     private val args: AddFriendsFragmentArgs by navArgs()
-
-    private var userId = ""
 
     @Inject
     lateinit var listUserAdapter: ListUserAdapter
+
     @Inject
-    lateinit var pendingRequestAdapter : PendingRequestAdapter
+    lateinit var pendingRequestAdapter: PendingRequestAdapter
 
     override fun setupUi() {
-        viewModel.addFriendsUiState.value.let {
-
-        }
-
-        userId = args.userId.toString()
-        viewModel.userId = userId
-
+        setupUserAndRequestLists()
         setAdapters()
-        viewModel.getUsers()
-        args.userId?.let { viewModel.getPendingRequests(currentUserId = it) }
-
-        binding.edtSearchUser.addTextChangedListener {
-            if (binding.edtSearchUser.text!=null || binding.edtSearchUser.text.isNotEmpty()){
-                listUserAdapter.setUserList(viewModel.getFilteredList(binding.edtSearchUser.text.toString()))
-            }
-        }
-
-        binding.btnAddFriend.setOnClickListener {
-            val userList = viewModel.getFilteredList("")
-
-            userList.forEach {
-                if (it.isChecked){
-                    val userId2 = it.user.id.toString()
-                    viewModel.sendFriendRequest(userId,userId2)
-                    showToast("Friend request sent!!")
-                }
-                it.isChecked = false
-            }
-
-
-            listUserAdapter.setUserList(userList)
-        }
-
     }
 
-    private fun setAdapters(){
+    private fun setAdapters() {
         binding.recyclerviewUsers.adapter = listUserAdapter
         binding.recyclerviewPendingRequest.adapter = pendingRequestAdapter
         pendingRequestAdapter.setRequestList(viewModel.addFriendsUiState.value.pendingRequestList)
+    }
+
+    private fun setupUserAndRequestLists() {
+        viewModel.userId = args.userId.toString()
+        viewModel.userName = args.userName.toString()
+        viewModel.getUsers()
+        args.userId?.let { viewModel.getPendingRequests(currentUserId = it) }
     }
 
     override fun setupObservers() {
@@ -80,14 +55,34 @@ class AddFriendsFragment :
             viewModel.updatePendingRequest(pendingRequest = it)
             pendingRequestAdapter.setRequestList(viewModel.addFriendsUiState.value.pendingRequestList)
         }
+
+        binding.btnAddFriend.setOnClickListener {
+            val userList = viewModel.getFilteredList("")
+            userList.forEach {
+                if (it.isChecked) {
+                    val secondUserId = it.user.id.toString()
+                    val secondUserName = it.user.name
+                    viewModel.sendFriendRequest(
+                        args.userId.toString(),
+                        secondUserId,
+                        args.userName.toString(),
+                        secondUserName
+                    )
+                    showToast(getString(R.string.request_sent))
+                }
+                it.isChecked = false
+            }
+            listUserAdapter.setUserList(userList)
+        }
+
+        binding.edtSearchUser.addTextChangedListener {
+            if (binding.edtSearchUser.text != null || binding.edtSearchUser.text.isNotEmpty()) {
+                listUserAdapter.setUserList(viewModel.getFilteredList(binding.edtSearchUser.text.toString()))
+            }
+        }
     }
 
     private fun setUiState(addFriendsUiState: AddFriendsUiState) {
-
-        addFriendsUiState.error.let {
-
-        }
-
         addFriendsUiState.savedUserList.let {
             listUserAdapter.setUserList(it)
         }
@@ -96,10 +91,6 @@ class AddFriendsFragment :
 
         addFriendsUiState.pendingRequestList.let {
             pendingRequestAdapter.setRequestList(it)
-        }
-
-        addFriendsUiState.loading.let {
-
         }
     }
 }
