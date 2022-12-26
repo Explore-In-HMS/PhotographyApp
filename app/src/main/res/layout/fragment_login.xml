@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="400dp"
         android:layout_gravity="center_horizontal"
-        android:contentDescription="@string/todo"
+        android:contentDescription="@string/login_icon"
         android:src="@drawable/ic_login" />
 
     <TextView

@@ -12,11 +12,14 @@ import androidx.lifecycle.viewModelScope
 import com.hms.referenceapp.photoapp.common.Result
 import com.hms.referenceapp.photoapp.data.model.FileInformationModel
 import com.hms.referenceapp.photoapp.data.model.PhotoDetails
+import com.hms.referenceapp.photoapp.data.model.User
 import com.hms.referenceapp.photoapp.data.repository.CloudDbRepository
 import com.hms.referenceapp.photoapp.ui.base.BaseViewModel
+import com.hms.referenceapp.photoapp.util.Constant.FILE_ID
+import com.hms.referenceapp.photoapp.util.Constant.RECEIVER_ID
+import com.hms.referenceapp.photoapp.util.Constant.SENDER_ID
 import com.huawei.agconnect.auth.AGConnectAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,41 +35,91 @@ class ShareImageViewModel @Inject constructor(
 
     private val _shareImageUiState = MutableStateFlow(ShareImageUiState.initial())
     val shareImageUiState: StateFlow<ShareImageUiState> get() = _shareImageUiState.asStateFlow()
+    private val hashmapSharedPeople = HashMap<String, ArrayList<User>>()
+    private val hashmapFilesSharedWithYouPeople = HashMap<String, ArrayList<User>>()
+    private val receiverFileList = mutableListOf<PhotoDetails>()
 
     init {
         unRegisterToListen()
         observeCloudDbZone()
         observeRealTimeFilesYouSharedResponse()
         observeRealTimeSharedFilesWithYouResponse()
+        observeRealTimeSharedFilesWithYouReceiversResponse()
     }
 
     fun filterFilesYouSharedList(photoDetailList: List<PhotoDetails>): List<SharePhotoModel> {
-        return photoDetailList.distinctBy {  it.fileId }.map {
+        photoDetailList.forEach {
+            hashmapSharedPeople[it.fileId] = arrayListOf()
+        }
+        photoDetailList.forEach {
+            val sharedUser = User()
+            sharedUser.id = it.receiverId.toLong()
+            sharedUser.name = it.receiverName
+            hashmapSharedPeople[it.fileId]?.add(sharedUser)
+        }
+
+        val sortedPhotoDetailList = photoDetailList.sortedBy {
+            it.id
+        }
+
+        return sortedPhotoDetailList.distinctBy { it.fileId }.map {
             SharePhotoModel(
                 id = it.id,
                 fileId = it.fileId,
                 title = it.fileName,
                 description = it.fileDesc,
-                sharedPersonCount = it.numberOfPeopleShared
+                sharedPersonCount = it.numberOfPeopleShared,
+                isFileSharedByMe = true
             )
         }
     }
 
     fun filterSharedFilesWithYouList(photoDetailList: List<PhotoDetails>): List<SharePhotoModel> {
+        photoDetailList.forEach { photoDetails ->
+            viewModelScope.launch {
+                cloudDbRepository.cloudDbZoneFlow.collect {
+                    if (it != null && hashmapFilesSharedWithYouPeople[photoDetails.fileId.toString()] == null) {
+                        cloudDbRepository.addSubscriptionForSharedFilesWithYouReceivers(
+                            it,
+                            FILE_ID,
+                            photoDetails.fileId
+                        )
+                    }
+                }
+            }
+        }
         return photoDetailList.map {
             SharePhotoModel(
                 id = it.id,
                 fileId = it.fileId,
                 title = it.fileName,
                 description = it.fileDesc,
-                sharedPersonCount = it.numberOfPeopleShared
+                sharedPersonCount = ((it.numberOfPeopleShared.toInt() + 1).toString()),
+                isFileSharedByMe = false
             )
         }
     }
 
-    @ExperimentalCoroutinesApi
-    fun prepareFileData(fileInformationModel: FileInformationModel?) {
+    private fun setReceivedUsers(photoDetailList: List<PhotoDetails>) {
+        photoDetailList.forEach {
+            hashmapFilesSharedWithYouPeople[it.fileId] = arrayListOf()
+        }
+        for (item in photoDetailList) {
+            val sharedUser = User()
+            sharedUser.id = item.senderId.toLong()
+            sharedUser.name = item.senderName
+            hashmapFilesSharedWithYouPeople[item.fileId]?.add(sharedUser)
+            break
+        }
+        photoDetailList.forEach {
+            val sharedUser = User()
+            sharedUser.id = it.receiverId.toLong()
+            sharedUser.name = it.receiverName
+            hashmapFilesSharedWithYouPeople[it.fileId]?.add(sharedUser)
+        }
+    }
 
+    fun prepareFileData(fileInformationModel: FileInformationModel?) {
         var milliSecond = System.currentTimeMillis().toInt()
         val fileIdWithMillisecond = "fileId_${milliSecond}"
 
@@ -88,7 +141,12 @@ class ShareImageViewModel @Inject constructor(
         }
     }
 
-    @ExperimentalCoroutinesApi
+    fun deleteSharedFile(fileId: Int, sharedPersonCount: Int) {
+        for (i in 0 until sharedPersonCount) {
+            cloudDbRepository.deleteSharedFile(fileId + i)
+        }
+    }
+
     private fun saveFileWithPersonToCloud(fileWithPersonList: PhotoDetails) {
         viewModelScope.launch {
             cloudDbRepository.saveToCloudDB(fileWithPersonList).collect {
@@ -100,7 +158,7 @@ class ShareImageViewModel @Inject constructor(
     private fun handleFileWithPersonSaveStatus(result: Result<Boolean>) {
         when (result) {
             is Result.Error -> setErrorState(result.exception)
-            Result.Loading -> setLoadingState()
+            is Result.Loading -> setLoadingState()
             is Result.Success -> setSavedFileWithPersonState()
         }
     }
@@ -135,6 +193,14 @@ class ShareImageViewModel @Inject constructor(
         }
     }
 
+    fun getSharedPeopleFromFileId(fileId: String): ArrayList<User>? {
+        return hashmapSharedPeople[fileId]
+    }
+
+    fun getSharedWithYouPeopleFromFileId(fileId: String): ArrayList<User>? {
+        return hashmapFilesSharedWithYouPeople[fileId]
+    }
+
     fun errorShown() {
         _shareImageUiState.update {
             it.copy(error = emptyList())
@@ -157,19 +223,27 @@ class ShareImageViewModel @Inject constructor(
         }
     }
 
+    private fun observeRealTimeSharedFilesWithYouReceiversResponse() {
+        viewModelScope.launch {
+            cloudDbRepository.sharedFilesWithYouReceiverResponse.collect {
+                handleSharedFilesWithYouReceiverListStatus(it)
+            }
+        }
+    }
+
     private fun observeCloudDbZone() {
         viewModelScope.launch {
             cloudDbRepository.cloudDbZoneFlow.collect {
                 if (it != null) {
                     cloudDbRepository.addSubscriptionForFilesYouShared(
                         it,
-                        "senderId",
+                        SENDER_ID,
                         agConnectUser.currentUser.uid
                     )
 
                     cloudDbRepository.addSubscriptionForSharedFilesWithYou(
                         it,
-                        "receiverId",
+                        RECEIVER_ID,
                         agConnectUser.currentUser.uid
                     )
                 }
@@ -195,6 +269,22 @@ class ShareImageViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun handleSharedFilesWithYouReceiverListStatus(result: MutableList<PhotoDetails>?) {
+        receiverFileList.clear()
+        result?.forEach {
+            receiverFileList.add(it)
+        }
+
+        if (result != null) {
+            _shareImageUiState.update { currentShareImageUiState ->
+                currentShareImageUiState.copy(
+                    sharedFilesWithYouReceiverList = receiverFileList
+                )
+            }
+        }
+        setReceivedUsers(receiverFileList)
     }
 
     private fun unRegisterToListen() {

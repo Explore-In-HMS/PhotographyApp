@@ -8,6 +8,7 @@
 
 package com.hms.referenceapp.photoapp.adapter
 
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -25,6 +26,16 @@ class SharedFileAdapter @Inject constructor() :
         onItemClickListener = listener
     }
 
+    private var onSharedPersonItemClickListener: ((SharePhotoModel) -> Unit)? = null
+    fun setOnSharedPersonItemClickListener(listener: (SharePhotoModel) -> Unit) {
+        onSharedPersonItemClickListener = listener
+    }
+
+    private var onDeleteItemClickListener: ((SharePhotoModel) -> Unit)? = null
+    fun setOnDeleteItemClickListener(listener: (SharePhotoModel) -> Unit) {
+        onDeleteItemClickListener = listener
+    }
+
     inner class FileItemViewHolder(
         private val binding: FileItemBinding
     ) :
@@ -35,8 +46,20 @@ class SharedFileAdapter @Inject constructor() :
             binding.descriptionTv.text = fileListItem.description
             binding.sharedPersonCountBtn.text = fileListItem.sharedPersonCount
 
+            if(fileListItem.isFileSharedByMe){
+                binding.imageDeleteFile.visibility = View.VISIBLE
+            }
+
             binding.fileListCard.setOnClickListener {
                 onItemClickListener?.invoke(fileListItem)
+            }
+
+            binding.sharedPersonCountBtn.setOnClickListener {
+                onSharedPersonItemClickListener?.invoke(fileListItem)
+            }
+
+            binding.imageDeleteFile.setOnClickListener {
+             onDeleteItemClickListener?.invoke(fileListItem)
             }
         }
     }

@@ -101,7 +101,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="5dp"
-        android:contentDescription="@string/todo"
+        android:contentDescription="@string/edited_image"
         app:layout_constraintBottom_toTopOf="@+id/cropFeatures"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -143,7 +143,7 @@
             android:layout_marginHorizontal="15dp"
             android:layout_marginVertical="3dp"
             android:src="@drawable/crop"
-            android:contentDescription="@string/todo" />
+            android:contentDescription="@string/crop" />
 
         <ImageView
             android:id="@+id/rotate"
@@ -152,7 +152,7 @@
             android:layout_marginHorizontal="15dp"
             android:layout_marginVertical="3dp"
             android:src="@drawable/rotate"
-            android:contentDescription="@string/todo"/>
+            android:contentDescription="@string/rotate"/>
 
         <ImageView
             android:id="@+id/flipHorizontal"
@@ -161,7 +161,7 @@
             android:layout_marginHorizontal="15dp"
             android:layout_marginVertical="3dp"
             android:src="@drawable/flip_vertical"
-            android:contentDescription="@string/todo"/>
+            android:contentDescription="@string/flip_horizontally"/>
 
         <ImageView
             android:id="@+id/flipVertical"
@@ -170,7 +170,7 @@
             android:layout_marginHorizontal="15dp"
             android:layout_marginVertical="3dp"
             android:src="@drawable/flip_horizontal"
-            android:contentDescription="@string/todo"/>
+            android:contentDescription="@string/flip_vertically"/>
 
     </LinearLayout>
 

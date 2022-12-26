@@ -15,15 +15,16 @@ data class ShareImageUiState(
     val isSavedFilesWithPerson: List<Boolean>,
     val filesYouSharedList: List<PhotoDetails>,
     val sharedFilesWithYouList: List<PhotoDetails>,
+    val sharedFilesWithYouReceiverList: List<PhotoDetails>,
     val error: List<String>
 ) {
-
     companion object {
         fun initial() = ShareImageUiState(
             loading = false,
             isSavedFilesWithPerson = emptyList(),
             filesYouSharedList = emptyList(),
             sharedFilesWithYouList = emptyList(),
+            sharedFilesWithYouReceiverList = emptyList(),
             error = emptyList()
         )
     }

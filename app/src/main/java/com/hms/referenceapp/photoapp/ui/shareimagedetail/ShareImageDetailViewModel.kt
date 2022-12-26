@@ -12,18 +12,21 @@ import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.hms.referenceapp.photoapp.R
 import com.hms.referenceapp.photoapp.common.Result
+import com.hms.referenceapp.photoapp.data.model.ParcelableUser
+import com.hms.referenceapp.photoapp.data.model.PhotoDetails
 import com.hms.referenceapp.photoapp.data.model.Photos
 import com.hms.referenceapp.photoapp.data.repository.CloudDbRepository
+import com.hms.referenceapp.photoapp.di.ResourceProvider
 import com.hms.referenceapp.photoapp.ui.base.BaseViewModel
 import com.hms.referenceapp.photoapp.ui.shareimage.SharePhotoModel
 import com.hms.referenceapp.photoapp.util.ext.toBitmap
+import com.hms.referenceapp.photoapp.util.ext.toBytes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,8 +38,8 @@ import javax.inject.Inject
 class ShareImageDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val cloudDbRepository: CloudDbRepository,
+    private val resourceProvider: ResourceProvider
 ) : BaseViewModel() {
-
 
     private val selectedPhotos = mutableListOf<Bitmap>()
 
@@ -44,13 +47,13 @@ class ShareImageDetailViewModel @Inject constructor(
     val sharePhotoUiState get() = _sharePhotoUiState.asStateFlow()
 
     init {
-        val sharePhotoModel =
-            ShareImageDetailFragmentArgs.fromSavedStateHandle(savedStateHandle).sharePhotoModel
-        setSharedPhotosInfo(sharePhotoModel)
+        with(ShareImageDetailFragmentArgs.fromSavedStateHandle(savedStateHandle)){
+            setSharedPhotosInfo(sharePhotoModel, sharedUserList, didIShare)
+        }
     }
 
 
-    private fun setSharedPhotosInfo(sharePhotoModel: SharePhotoModel) {
+    private fun setSharedPhotosInfo(sharePhotoModel: SharePhotoModel, sharedUserList: Array<ParcelableUser>, didIShare: Boolean) {
         _sharePhotoUiState.update { current ->
             with(sharePhotoModel) {
                 current.copy(
@@ -58,7 +61,9 @@ class ShareImageDetailViewModel @Inject constructor(
                     fileId = fileId,
                     title = title,
                     description = description,
-                    sharedPersonCount = sharedPersonCount
+                    sharedPersonCount = sharedPersonCount,
+                    sharedUserList = sharedUserList.toList(),
+                    didIShare = didIShare
                 )
             }
         }
@@ -67,8 +72,11 @@ class ShareImageDetailViewModel @Inject constructor(
             result.getContentIfNotHandled()?.let { it ->
                 when (it) {
                     is Result.Error -> showError(it.exception.localizedMessage.orEmpty())
-                    Result.Loading -> showLoading()
-                    is Result.Success -> showAlreadySharedPhotos(it.data.map { it.byteArrayOfPhoto })
+                    is Result.Loading -> showLoading()
+                    is Result.Success -> showAlreadySharedPhotos(
+                        it.data.map { it.byteArrayOfPhoto },
+                        it.data
+                    )
                 }
             }
         }.launchIn(viewModelScope)
@@ -76,10 +84,40 @@ class ShareImageDetailViewModel @Inject constructor(
         cloudDbRepository.getSharedPhotos(sharePhotoModel.fileId)
     }
 
-    private fun showAlreadySharedPhotos(sharedPhotos: List<ByteArray>) {
+    private fun showAlreadySharedPhotos(
+        sharedPhotos: List<ByteArray>,
+        updatedPhotos: List<Photos>
+    ) {
         _sharePhotoUiState.update { current ->
             current.copy(
                 photos = current.photos + sharedPhotos.map { convertByteArrayToBitmap(it) },
+                updatedPhotos = current.updatedPhotos + updatedPhotos,
+                error = null,
+                loading = false
+            )
+        }
+    }
+
+    fun deleteSharedPhotos(deletedPhotos: List<Photos>) {
+        deletedPhotos.forEach {
+            cloudDbRepository.deletePhotos(it.id)
+        }
+
+        cloudDbRepository.deleteSharedPhotosResponse.onEach { result ->
+            result.getContentIfNotHandled()?.let { it ->
+                when (it) {
+                    is Result.Error -> showError(it.exception.localizedMessage.orEmpty())
+                    is Result.Loading -> showLoading()
+                    is Result.Success -> removeDeletedSharedPhotos(deletedPhotos)
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun removeDeletedSharedPhotos(deletedPhotos: List<Photos>) {
+        _sharePhotoUiState.update { current ->
+            current.copy(
+                updatedPhotos = current.updatedPhotos - deletedPhotos.toSet(),
                 error = null,
                 loading = false
             )
@@ -87,19 +125,52 @@ class ShareImageDetailViewModel @Inject constructor(
     }
 
     fun setSelectedPhoto(selectedPhotoList: List<Uri>, contentResolver: ContentResolver) {
-        selectedPhotoList.forEach {
-            selectedPhotos.add(it.toBitmap(contentResolver, true))
-        }.also {
-            _sharePhotoUiState.update { current ->
-                current.copy(photos = (current.photos + selectedPhotos).distinct())
+        viewModelScope.launch {
+            val newList = arrayListOf<Photos>()
+            selectedPhotoList.forEach {
+                selectedPhotos.add(it.toBitmap(contentResolver, true))
+                newList.add(Photos().apply {
+                    id = sharePhotoUiState.value.id
+                    fileId = sharePhotoUiState.value.fileId
+                    byteArrayOfPhoto = it.toBytes(contentResolver)
+                })
+            }.also {
+                _sharePhotoUiState.update { current ->
+                    current.copy(
+                        updatedPhotos = current.updatedPhotos + newList
+                    )
+                }
             }
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    fun deleteUserFromSharedFile(fileId: String, receiverId: Long) {
+        cloudDbRepository.deleteUserFromSharedFile(fileId, receiverId)
+        cloudDbRepository.deleteUserResponse.onEach { result ->
+            result.getContentIfNotHandled()?.let { it ->
+                when (it) {
+                    is Result.Error -> showError(it.exception.localizedMessage.orEmpty())
+                    is Result.Loading -> showLoading()
+                    is Result.Success -> updateSharedUserList(it.data)
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun updateSharedUserList(deletedUser: PhotoDetails) {
+        _sharePhotoUiState.update { current ->
+            val newList = current.sharedUserList - listOf(ParcelableUser(deletedUser.receiverId.toLong(), null, deletedUser.receiverName)).toSet()
+            current.copy(
+                sharedUserList = newList,
+                error = null,
+                loading = false
+            )
+        }
+    }
+
     fun sharePhotos() {
         if (isUserSelectPhoto()) {
-            showError("Please select photo for sharing..")
+            showError(resourceProvider.getString(R.string.error_select_photo))
             return
         }
         viewModelScope.launch {
@@ -121,7 +192,7 @@ class ShareImageDetailViewModel @Inject constructor(
             }
 
             if (errorResultCount > 0) {
-                showError(message = "$errorResultCount image did not upload. Please try again.")
+                showError(message = errorResultCount.toString() + resourceProvider.getString(R.string.error_did_not_upload))
             } else {
                 showSuccess()
             }
@@ -132,7 +203,7 @@ class ShareImageDetailViewModel @Inject constructor(
 
     private fun showLoading() {
         _sharePhotoUiState.update { current ->
-            current.copy(loading = true, error = null, isPhotosSharedSuccessuflly = false)
+            current.copy(loading = true, error = null, isPhotosSharedSuccessfully = false)
         }
     }
 
@@ -141,14 +212,14 @@ class ShareImageDetailViewModel @Inject constructor(
             current.copy(
                 loading = false,
                 error = message,
-                isPhotosSharedSuccessuflly = false
+                isPhotosSharedSuccessfully = false
             )
         }
     }
 
     private fun showSuccess() {
         _sharePhotoUiState.update { current ->
-            current.copy(loading = false, error = null, isPhotosSharedSuccessuflly = true)
+            current.copy(loading = false, error = null, isPhotosSharedSuccessfully = true)
         }
     }
 
@@ -180,10 +251,7 @@ class ShareImageDetailViewModel @Inject constructor(
                     baos
                 ) //Here, the compression options are used to store the compressed data in the BIOS
                 options -= 10 //10 less each time
-                Log.d("compressed ${bitmap.generationId}", getImageSize(baos).toString())
             }
-
-            Log.d("compressed-last", getImageSize(baos).toString())
             baos.toByteArray()
         }
 

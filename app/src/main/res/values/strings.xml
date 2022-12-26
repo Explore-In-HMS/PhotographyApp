@@ -9,40 +9,113 @@
 <resources>
     <string name="app_name">Photography App</string>
 
+    <!-- Common -->
+    <string name="share">Share</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+
+    <!-- Permission -->
     <string name="dialog_permission_title">Permission Required</string>
-    <string name="dialog_permission_default_message">We need permission to see objects.</string>
     <string name="dialog_permission_button_positive">Allow</string>
     <string name="get_photo_permission_message">We need permission to see photos.</string>
     <string name="access_media_location_permission_message">We need permission to access photo location.</string>
-    <string name="photo_count"> Photos (%1$d)</string>
-    <string name="other_tags">Other Tags:</string>
-    <string name="tag_name">TAG NAME</string>
-    <string name="test">Test</string>
-    <string name="todo">TODO</string>
-    <string name="tagName">Tag Name: %s</string>
-    <string name="edit">Edit</string>
-    <string name="share">Share</string>
+
+    <!-- Edit Image -->
     <string name="save_filter">Save Filter</string>
     <string name="save_crop">Save Crop</string>
     <string name="cancel">Cancel</string>
     <string name="end_edit">End Edit</string>
-    <string name="save_photo">Save Photo</string>
-    <string name="back">Back</string>
-    <string name="shareImage">Share Image</string>
-    <string name="home">Home</string>
+    <string name="edited_image">Edited Image</string>
+    <string name="crop">Crop</string>
+    <string name="rotate">Rotate</string>
+    <string name="flip_horizontally">Flip Horizontally</string>
+    <string name="flip_vertically">Flip Vertically</string>
+
+    <!-- Home -->
+    <string name="photo_count"> Photos (%1$d)</string>
     <string name="locations">Locations</string>
     <string name="titles">Titles</string>
+
+    <!-- List User -->
     <string name="add_file_information">Add File Information</string>
-    <string name="title">Title</string>
-    <string name="description">Description</string>
-    <string name="add_person">Add Person</string>
-    <string name="shared_files">Files You Shared</string>
-    <string name="save_file_info">Save File Info</string>
-    <string name="shared_images">Shared Images</string>
-    <string name="select_photo">Select Photo</string>
+    <string name="save_values">Save Values</string>
+    <string name="error_description">Description can not be empty</string>
+    <string name="error_title">Title can not be empty</string>
+    <string name="error_user_list">You have to select at least one user</string>
+
+    <!-- Login -->
     <string name="welcome_to_PhotographyApp">Welcome to PhotographyApp</string>
     <string name="login_and_start_to_edit_your_photos">Login and start to edit your photos</string>
-    <string name="date_title">Date Title</string>
+    <string name="login_icon">Login Icon</string>
+
+    <!-- Open Image -->
+    <string name="save_photo">Save Photo</string>
+    <string name="opened_image">Opened Image</string>
+
+    <!-- Share Image -->
+    <string name="shareImage">Share Image</string>
+    <string name="shared_files">Files You Shared</string>
     <string name="shared_files_with_you">Shared Files With You</string>
-    <string name="save_values">Save Values</string>
+    <string name="delete_warning">Are you sure you want to delete this file?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="saved_data_successfully">Saved Data Successfully</string>
+
+    <!-- Share Image Detail -->
+    <string name="select_photo">Select Photo</string>
+    <string name="detail_icon">Detail Icon</string>
+    <string name="photos_shared_successfully">Photos shared successfully</string>
+    <string name="error_select_photo">Please select photo for sharing..</string>
+    <string name="error_did_not_upload">image did not upload. Please try again.</string>
+
+    <!-- Tag Detail -->
+    <string name="tag_name">TAG NAME</string>
+    <string name="tagName">Tag Name: %s</string>
+
+    <!-- Filter Type -->
+    <string name="test">Test</string>
+
+    <!-- Menu -->
+    <string name="back">Back</string>
+    <string name="home">Home</string>
+    <string name="edit">Edit</string>
+
+    <!-- Date Item -->
+    <string name="date_title">Date Title</string>
+
+    <!-- File Item -->
+    <string name="file_item_image">File Item Image</string>
+
+    <!-- Gallery Item -->
+    <string name="gallery_item">Gallery Item</string>
+
+    <!-- Tag Photo Item -->
+    <string name="first">First</string>
+    <string name="second">Second</string>
+    <string name="tag_image">Tag Image</string>
+
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="user_image">User Image</string>
+
+    <!-- AddFriend -->
+    <string name="search_user">search user</string>
+    <string name="add_friend">add friend</string>
+    <string name="accept_request">✓</string>
+    <string name="decline_request">×</string>
+    <string name="apply_dialog">OK</string>
+    <string name="shared_people">Shared People</string>
+    <string name="request_sent">Friend request sent!!</string>
+
+    <!-- DeletePhoto -->
+    <string name="delete_photos">Delete Photos</string>
+    <string name="delete_photos_warning">In order to delete, you must select at least one photo!</string>
+    <string name="delete_photos_successfully">Photo has been deleted successfully.</string>
+
+    <!-- CloudDbRepository -->
+    <string name="exp_sht_went_wrong">Something went wrong</string>
+    <string name="exp_sht_went_wrong_deleting">Something went wrong during deleting</string>
+    <string name="exp_null_cloud_db_zone">CloudDBZone is null, try re-open it</string>
+
 </resources>

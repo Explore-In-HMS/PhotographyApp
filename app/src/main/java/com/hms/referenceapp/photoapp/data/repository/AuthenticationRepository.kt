@@ -11,6 +11,7 @@ package com.hms.referenceapp.photoapp.data.repository
 import android.content.Intent
 import com.hms.referenceapp.photoapp.common.Result
 import com.hms.referenceapp.photoapp.data.model.User
+import com.hms.referenceapp.photoapp.data.model.UserRelationship
 import com.hms.referenceapp.photoapp.listeners.IServiceListener
 import com.huawei.agconnect.auth.AGConnectAuth
 import com.huawei.agconnect.auth.AGConnectUser
@@ -58,6 +59,11 @@ class AuthenticationRepository @Inject constructor(
     @ExperimentalCoroutinesApi
     fun saveUserToCloud(user: User): Flow<Result<Boolean>> {
         return cloudDbRepository.saveToCloudDB(user)
+    }
+
+    @ExperimentalCoroutinesApi
+    fun saveUserRelationshipToCloud(userRelationship: UserRelationship): Flow<Result<Boolean>> {
+        return cloudDbRepository.saveToCloudDB(userRelationship)
     }
 
     fun signOut() {

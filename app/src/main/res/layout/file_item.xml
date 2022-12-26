@@ -26,7 +26,7 @@
             android:id="@+id/imageIv"
             android:layout_width="match_parent"
             android:layout_height="180dp"
-            android:contentDescription="@string/todo"
+            android:contentDescription="@string/file_item_image"
             android:scaleType="centerCrop"
             android:src="@drawable/ocean" />
 
@@ -66,7 +66,7 @@
             <Button
                 style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                 android:id="@+id/sharedPersonCountBtn"
-                android:layout_width="wrap_content"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textColor="@color/black"
@@ -74,6 +74,17 @@
                 app:icon="@drawable/ic_person_black"
                 app:iconSize="28dp"
                 app:iconTint="@color/black" />
+            <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                android:id="@+id/imageDeleteFile"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginEnd="5dp"
+                android:textSize="14sp"
+                app:icon="@drawable/ic_menu_delete"
+                app:iconSize="28dp" />
 
         </LinearLayout>
 

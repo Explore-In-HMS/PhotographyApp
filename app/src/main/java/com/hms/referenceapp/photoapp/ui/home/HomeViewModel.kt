@@ -142,19 +142,20 @@ class HomeViewModel @Inject constructor(
     fun getThemeTagFromImage(
         contentResolver: ContentResolver,
         path: List<PhotoModel>,
-        requestFlag: Boolean
+        requestFlag: Boolean,
+        photoSize: Int
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             if (requestFlag) {
-                getTagsFromMlKit(contentResolver, path)
+                getTagsFromMlKit(contentResolver, path,photoSize)
             } else {
-                getTagsFromDB()
+                getTagsFromDB(photoSize)
             }
         }
     }
 
 
-    private fun getTagsFromMlKit(contentResolver: ContentResolver, path: List<PhotoModel>) {
+    private fun getTagsFromMlKit(contentResolver: ContentResolver, path: List<PhotoModel>, photoSize: Int) {
         val classification: MutableList<ClassificationModel> = mutableListOf()
         mlKitResponseMutableList.clear()
         for (pathItem in path) {
@@ -181,7 +182,7 @@ class HomeViewModel @Inject constructor(
                     )
                 )
 
-                if (classification.isNotEmpty() && classification.size == 20) {
+                if (classification.isNotEmpty() && classification.size == photoSize) { //classification size photo size olmalı
                     _data.value = classification
                     viewModelScope.launch(Dispatchers.IO) {
                         insertDB(dataList = classification)
@@ -191,9 +192,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun getTagsFromDB() {
+    private fun getTagsFromDB(photoSize: Int) {
         dbResult = imageClassificationRepository.getAllClassification()
-        if (dbResult.isNotEmpty() && dbResult.size == 20) {
+        if (dbResult.isNotEmpty() && dbResult.size == photoSize) {
             _data.value = dbResult
         }
     }

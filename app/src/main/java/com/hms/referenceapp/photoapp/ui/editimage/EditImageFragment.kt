@@ -8,7 +8,9 @@
 
 package com.hms.referenceapp.photoapp.ui.editimage
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.view.MotionEvent
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -45,6 +47,8 @@ class EditImageFragment :
     private var bitmapImage: Bitmap? = null
     private var finalImage: Bitmap? = null
 
+    private var isLongPressed = false
+
     override fun setupUi() {
         bitmapImage = if (editImageFragmentArgs.imagePath != null) {
             viewModel.convertToBitmap(
@@ -73,6 +77,7 @@ class EditImageFragment :
         imageVisionFilterAPI.stop()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun setupListeners() {
         with(binding) {
             crop.setOnClickListener {
@@ -144,10 +149,23 @@ class EditImageFragment :
                 enableEndEditButton()
             }
 
+            editImageView.setOnLongClickListener {
+                showOriginalImage()
+                return@setOnLongClickListener true
+            }
+
+            editImageView.setOnTouchListener { view, motionEvent ->
+                view.onTouchEvent(motionEvent)
+                if (motionEvent.action == MotionEvent.ACTION_UP){
+                   showEditedImage()
+                }
+                return@setOnTouchListener true
+            }
+
             endEditButton.setOnClickListener {
                 if (finalImage != null) {
                     val action =
-                        EditImageFragmentDirections.actionEditImageFragmentToOpenImageFragment(null)
+                        EditImageFragmentDirections.actionEditImageFragmentToOpenImageFragment(null, null)
                             .setEditedImageArg(
                                 finalImage?.let { image -> EditedPhotoModel(image) }
                             )
@@ -155,7 +173,7 @@ class EditImageFragment :
                 } else {
                     val action =
                         EditImageFragmentDirections.actionEditImageFragmentToOpenImageFragment(
-                            editImageFragmentArgs.imagePath
+                            editImageFragmentArgs.imagePath, null
                         ).setEditedImageArg(bitmapImage?.let { image -> EditedPhotoModel(image) })
                     findNavController().navigate(action)
                 }
@@ -259,6 +277,20 @@ class EditImageFragment :
                     editImageInImageView()
                     enableEndEditButton()
                 }
+            }
+        }
+    }
+
+    private fun showOriginalImage(){
+        isLongPressed = true
+        binding.editImageView.setImageBitmap(bitmapImage!!)
+    }
+
+    private fun showEditedImage(){
+        if (isLongPressed){
+            isLongPressed = false
+            if (finalImage != null) {
+                binding.editImageView.setImageBitmap(finalImage)
             }
         }
     }
