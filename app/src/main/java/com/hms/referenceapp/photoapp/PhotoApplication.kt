@@ -11,6 +11,7 @@ package com.hms.referenceapp.photoapp
 
 import android.app.Application
 import com.huawei.agconnect.cloud.database.AGConnectCloudDB
+import com.huawei.hms.maps.MapsInitializer
 import com.huawei.hms.mlsdk.common.MLApplication
 import dagger.hilt.android.HiltAndroidApp
 
@@ -24,11 +25,12 @@ class PhotoApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        MLApplication.getInstance().apiKey = BuildConfig.API_KEY
+        // add API_KEY to use on Cloud Services
+        // call the necessary method and add API KEY as a parameter to use MapKit properly
         initCloudDb()
     }
 
     private fun initCloudDb() {
-        AGConnectCloudDB.initialize(this)
+        // add the necessary function here
     }
 }

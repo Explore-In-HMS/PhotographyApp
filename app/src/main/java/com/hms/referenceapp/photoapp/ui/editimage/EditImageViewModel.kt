@@ -50,7 +50,7 @@ class EditImageViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             imageVisionFilterAPI.setVisionCallBack(object : ImageVision.VisionCallBack {
                 override fun onSuccess(successCode: Int) {
-                    val initCode = imageVisionFilterAPI.init(context, authJson)
+                    val initCode = // please call init function here
                     Log.i("TAG", "initCode: $initCode")
                 }
 
@@ -78,10 +78,7 @@ class EditImageViewModel @Inject constructor(
             jsonObject.put("taskJson", taskJson)
             jsonObject.put("authJson", authJson)
 
-            result = imageVisionFilterAPI.getColorFilter(
-                jsonObject,
-                image
-            )
+            result = // filter image with Json object here
 
             withContext(Dispatchers.Main) {
                 _imageKitResponseFlow.value = result?.image

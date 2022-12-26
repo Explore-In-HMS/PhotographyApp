@@ -27,6 +27,6 @@ object ImageKitModule {
     fun provideImageKitInstance(
         @ApplicationContext context: Context
     ): ImageVisionImpl {
-        return ImageVision.getInstance(context)
+        return // please call the necessary function
     }
 }

@@ -161,11 +161,10 @@ class HomeViewModel @Inject constructor(
         for (pathItem in path) {
             val classificationParameter: MutableList<ClassificationParameter> =
                 mutableListOf()
-            val frame =
-                MLFrame.fromBitmap(pathItem.path.toUri().toBitmap(contentResolver, false))
+            val frame = // please create MLFrame object here
 
             // ML Kit -  Image Classification Async Process
-            val task = mlKitInstance.asyncAnalyseFrame(frame)
+            val task = // please add necessary function here
             task.addOnSuccessListener {
                 it.forEach { imageClassification ->
                     classificationParameter.add(
@@ -182,7 +181,7 @@ class HomeViewModel @Inject constructor(
                     )
                 )
 
-                if (classification.isNotEmpty() && classification.size == photoSize) { //classification size photo size olmalı
+                if (classification.isNotEmpty() && classification.size == photoSize) {
                     _data.value = classification
                     viewModelScope.launch(Dispatchers.IO) {
                         insertDB(dataList = classification)

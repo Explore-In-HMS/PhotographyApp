@@ -122,7 +122,7 @@ class CloudDbRepository @Inject constructor(
             return@callbackFlow
         }
 
-        val upsertTask = cloudDBZone!!.executeUpsert(cloudDBZoneObject)
+        val upsertTask = // Define the upsertTask properly here
         upsertTask.addOnSuccessListener {
             trySend(Result.Success(true))
         }.addOnFailureListener { exception ->
@@ -221,8 +221,7 @@ class CloudDbRepository @Inject constructor(
             if (isDpOpen().not()) {
                 return
             }
-            val snapshotQuery = CloudDBZoneQuery.where(PhotoDetails::class.java)
-                .equalTo(queryTitle, queryValue)
+            val snapshotQuery = // Add the proper query function here
             mRegisterSharedFilesWithYou = cloudDBZoneInstance.subscribeSnapshot(
                 snapshotQuery,
                 CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY,
@@ -295,10 +294,7 @@ class CloudDbRepository @Inject constructor(
             Log.w(TAG, resourceProvider.getString(R.string.exp_null_cloud_db_zone))
             return
         }
-        val queryTask = cloudDBZone!!.executeQuery(
-            CloudDBZoneQuery.where(User::class.java),
-            CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
-        )
+        val queryTask = // Define the queryTask properly here
         queryTask.addOnSuccessListener { snapshot -> processUserQueryResult(snapshot) }
             .addOnFailureListener {
             }
@@ -449,10 +445,7 @@ class CloudDbRepository @Inject constructor(
         if (cloudDBZone == null) {
             return
         }
-        val queryTask = cloudDBZone!!.executeQuery(
-            CloudDBZoneQuery.where(UserRelationship::class.java),
-            CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
-        )
+        val queryTask = // Define the queryTask properly here
         queryTask.addOnSuccessListener { snapshot ->
             processUserRelationQueryResult(snapshot)
         }

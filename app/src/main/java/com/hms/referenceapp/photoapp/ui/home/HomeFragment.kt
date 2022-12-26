@@ -56,7 +56,7 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>(FragmentHo
 
     private var clusterManager: ClusterManager<PhotoModel>? = null
 
-    private var mMapView: MapView? = null
+    private var mMapView: // please define the type of variable and value and decide the variable whether nullable or not
 
     private val readExternalStoragePermissionResultLauncher = getPermissionResultLauncher(
         permission = AppPermission.ReadExternalStorage,
@@ -92,7 +92,7 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>(FragmentHo
         }
     )
 
-    private var hMap: HuaweiMap? = null
+    private var hMap: // please define the type of variable and value and decide the variable whether nullable or not
 
     @Inject
     lateinit var photoGalleryAdapter: PhotoGalleryAdapter
@@ -124,7 +124,7 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>(FragmentHo
 
         var mapViewBundle: Bundle? = null
         if (savedInstanceState == null) {
-            mapViewBundle = savedInstanceState?.getBundle("MapViewBundleKey")
+            mapViewBundle = // get bundle from the savedInstanceState here
         }
 
         mMapView?.onCreate(mapViewBundle)

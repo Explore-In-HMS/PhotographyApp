@@ -53,7 +53,7 @@ object CloudDBModule {
     fun provideAGConnectAuth(
         agConnectInstance: AGConnectInstance
     ): AGConnectAuth {
-        return AGConnectAuth.getInstance(agConnectInstance)
+        return // return agConnectInstance here
     }
 
 

@@ -30,7 +30,7 @@ object MLKitModule {
             .setLargestNumOfReturns(3)
             .create()
 
-        return MLAnalyzerFactory.getInstance().getRemoteImageClassificationAnalyzer(setting)
+        return // return necessary function here
 
     }
 

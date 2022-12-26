@@ -92,21 +92,21 @@ class EditImageFragment :
                 clearFilterEdit()
                 enableCropLayoutView()
                 editImageInCropLayoutView()
-                cropLayoutView.rotateClockwise()
+                // please add code to rotate view
             }
 
             flipHorizontal.setOnClickListener {
                 clearFilterEdit()
                 enableCropLayoutView()
                 editImageInCropLayoutView()
-                cropLayoutView.flipImageHorizontally()
+                // please add code to flip view
             }
 
             flipVertical.setOnClickListener {
                 clearFilterEdit()
                 enableCropLayoutView()
                 editImageInCropLayoutView()
-                cropLayoutView.flipImageVertically()
+                // please add code to flip view
             }
 
             // Filter Button
@@ -236,7 +236,7 @@ class EditImageFragment :
 
     private fun editImageInImageView() {
         if (finalImage != null) {
-            binding.editImageView.setImageBitmap(finalImage)
+            // set bitmap as final image here
         } else {
             binding.editImageView.setImageBitmap(bitmapImage)
         }
